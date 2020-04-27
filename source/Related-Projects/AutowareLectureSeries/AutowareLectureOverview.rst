@@ -10,76 +10,76 @@ Lesson 1: Building ROS workspace
 Lesson 2: ROS 2 101 - Just the basics
 -----
 
-1. What is a robot?
-2. History of ROS
-   3. ROS 2: Production Ready Boogaloo
-   1. Maturity
-   2. Security
-   3. RTOS Support
-   4. Portability
-4. 30 Minutes of Robotics Concepts
-   1. Concurrency (not your problem)
-   2. Message Passing / Buses
-   3. Black Boards
-   4. State Machines
-   5. Real Time (not really)
-5. Pillars of ROS
-   1. Nodes
-   2. Messages and Topics
-   3. Services
-   4. Actions
-   5. Parameters
-6. Playing Well With Others
-   1. Packages
-   2. Workspaces
-   3. Run-Time Tools
+#. What is a robot?
+#. History of ROS
+   #. ROS 2: Production Ready Boogaloo
+   #. Maturity
+   #. Security
+   #. RTOS Support
+   #. Portability
+#. 30 Minutes of Robotics Concepts
+   #. Concurrency (not your problem)
+   #. Message Passing / Buses
+   #. Black Boards
+   #. State Machines
+   #. Real Time (not really)
+#. Pillars of ROS
+   #. Nodes
+   #. Messages and Topics
+   #. Services
+   #. Actions
+   #. Parameters
+#. Playing Well With Others
+   #. Packages
+   #. Workspaces
+   #. Run-Time Tools
 
 
 Lesson 3: ROS 2 Tooling - Develop Like a Pro
 ----
-1. Overview and Motivating Concepts
-   1. The Command Line
-   2. Environment Variables
-2. Setuping up a Workspace.
-   1. Say it 10 times: source setup.bash
-   2. Checking your environment.
-3. Setting up our Toy Environment:
-   1. Review Lesson 1?
-   2. Workspaces again?
-   3. Building again?
-   4. Launching again?
-3. Command Line Tooling in ROS 2:
-   1. ros2 run: execute a program
-   2. rqt_graph - inspecting nodes
-   3. ros2 node: inspect a node
-      1. ros2 node list
-      2. ros2 node info
-4. "Sniffing the Bus": Examining Topics
-   1. ros2 topic list
-   2. ros2 topic echo
-   3. ros2 topic info
-   4. ros2 interface show
-   5. ros2 topic pub
-   6. ros2 topic hz
-   7. GUI Tools: rqt_plot / rqt_graph
-5. Services: Making things Happen
-   1. ros2 service list
-   2. ros2 service type
-   3. ros2 service find
-   4. ros2 interface show
-   5. ros2 service call
-   6. Seeing your results rviz2
-6. Parameters
-   1. ros2 param list
-   2. ros2 param get
-   3. ros2 param set
-   4. ros2 param dump
-   5. Parameter Serialization
-7. Logging Data: Secure the Bag
-   1. What's a bag?
-   2. ros2 bag record
-   3. ros2 bag record -- selecting topics
-   4. ros2 bag info
-   5. ros2 bag play
-   6. Python tools for bag introspection
-   7. Bags as a collaborative tool
+#. Overview and Motivating Concepts
+   #. The Command Line
+   #. Environment Variables
+#. Setuping up a Workspace.
+   #. Say it 10 times: source setup.bash
+   #. Checking your environment.
+#. Setting up our Toy Environment:
+   #. Review Lesson 1?
+   #. Workspaces again?
+   #. Building again?
+   #. Launching again?
+#. Command Line Tooling in ROS 2:
+   #. ros2 run: execute a program
+   #. rqt_graph - inspecting nodes
+   #. ros2 node: inspect a node
+      #. ros2 node list
+      #. ros2 node info
+#. "Sniffing the Bus": Examining Topics
+   #. ros2 topic list
+   #. ros2 topic echo
+   #. ros2 topic info
+   #. ros2 interface show
+   #. ros2 topic pub
+   #. ros2 topic hz
+   #. GUI Tools: rqt_plot / rqt_graph
+#. Services: Making things Happen
+   #. ros2 service list
+   #. ros2 service type
+   #. ros2 service find
+   #. ros2 interface show
+   #. ros2 service call
+   #. Seeing your results rviz2
+#. Parameters
+   #. ros2 param list
+   #. ros2 param get
+   #. ros2 param set
+   #. ros2 param dump
+   #. Parameter Serialization
+#. Logging Data: Secure the Bag
+   #. What's a bag?
+   #. ros2 bag record
+   #. ros2 bag record -- selecting topics
+   #. ros2 bag info
+   #. ros2 bag play
+   #. Python tools for bag introspection
+   #. Bags as a collaborative tool
