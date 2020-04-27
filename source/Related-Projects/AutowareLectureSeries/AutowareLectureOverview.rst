@@ -12,27 +12,27 @@ Lesson 2: ROS 2 101 - Just the basics
 
 #. What is a robot?
 #. History of ROS
-   #. ROS 2: Production Ready Boogaloo
-   #. Maturity
-   #. Security
-   #. RTOS Support
-   #. Portability
+#. ROS 2: Production Ready Boogaloo
+    #. Maturity
+    #. Security
+    #. RTOS Support
+    #. Portability
 #. 30 Minutes of Robotics Concepts
-   #. Concurrency (not your problem)
-   #. Message Passing / Buses
-   #. Black Boards
-   #. State Machines
-   #. Real Time (not really)
+    #. Concurrency (not your problem)
+    #. Message Passing / Buses
+    #. Black Boards
+    #. State Machines
+    #. Real Time (not really)
 #. Pillars of ROS
-   #. Nodes
-   #. Messages and Topics
-   #. Services
-   #. Actions
-   #. Parameters
+    #. Nodes
+    #. Messages and Topics
+    #. Services
+    #. Actions
+    #. Parameters
 #. Playing Well With Others
-   #. Packages
-   #. Workspaces
-   #. Run-Time Tools
+    #. Packages
+    #. Workspaces
+    #. Run-Time Tools
 
 
 Lesson 3: ROS 2 Tooling - Develop Like a Pro
