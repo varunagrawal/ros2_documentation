@@ -191,6 +191,7 @@ Let's try this ros2 node info command!
 *WOW, THAT'S A LOT OF INFO!!!*
 
 * What's there?
+
   * Subscribers and message types. 
   * Publishers and message types.
   * Services
@@ -211,3 +212,264 @@ What about non CLI Options?
 	   :width: 400
 
 ----
+
+====
+ROS Topic CLI Interface 
+====
+
+* Recall from last lesson that ROS topics are short hand for the ROS pub/sub bus.
+* ROS Topics By Analogy
+
+  * If you have worked with `RabbitMQ <https://en.wikipedia.org/wiki/RabbitMQ>`_ or `ZeroMQ <https://en.wikipedia.org/wiki/ZeroMQ>`_ it is very similar.
+  * In terms of hardware if you have worked with `ModBus <https://en.wikipedia.org/wiki/Modbus>`_ ROS topics are the software equivalent.
+  * ROS messages are basically a serialization protocol. A good analogy would be `Google protobuff <https://en.wikipedia.org/wiki/Protocol_Buffers>`_.
+
+* The short of it is that ROS nodes communicate over ROS topics, which are like phone numbers that anyone can dial into and listen.
+* These topics have _namespaces_ which are kinda like phone numbers or file paths. These topic names can be changed, or remapped, to connect nodes.
+
+----
+
+====
+ros2 topic *<xxxx>* 
+====
+
+Let's use help to see our options for this command.
+
+In your terminal run `ros2 topic -h`
+
+Try this::
+  
+  kscottz@ade:~$ ros2 topic
+  usage: ros2 topic [-h] [--include-hidden-topics]
+      Call `ros2 topic <command> -h` for more detailed usage. ...
+
+  Various topic related sub-commands
+  optional arguments:
+  -h, --help                show this help message and exit
+  --include-hidden-topics   Consider hidden topics as well
+  Commands:
+    bw     Display bandwidth used by topic
+    delay  Display delay of topic from timestamp in header
+    echo   Output messages from a topic
+    hz     Print the average publishing rate to screen
+    info   Print information about a topic
+    list   Output a list of available topics
+    pub    Publish a message to a topic
+
+    Call `ros2 topic <command> -h` for more detailed usage.
+
+Interesting, some let us to "introspect" the messages, look at performance, and even send off our own messages. 
+
+----
+
+====
+Let's look at the topics in TurtleSim
+====
+
+Let's start with rostopic list.
+
+::
+   
+   kscottz@ade:~$ ros2 topic list -h
+   usage: ros2 topic list [-h] [--spin-time SPIN_TIME] [-t] [-c]
+                         [--include-hidden-topics]
+
+   Output a list of available topics
+   optional arguments:
+   -h, --help            show this help message and exit
+   --spin-time SPIN_TIME
+                         Spin time in seconds to wait for discovery (only
+                         applies when not using an already running daemon)
+   -t, --show-types      Additionally show the topic type
+   -c, --count-topics    Only display the number of topics discovered
+   --include-hidden-topics
+                        Consider hidden topics as well
+   kscottz@ade:~$ ros2 topic list
+   /parameter_events
+   /rosout
+   /turtle1/cmd_vel
+   /turtle1/color_sensor
+   /turtle1/pose      
+   kscottz@ade:~$ 
+
+One thing of interest, note how `/turtle1/` is in front of the last three topics. We call this a namespace.
+
+----
+
+====
+Digging into topics 
+====
+
+* *Echo* is an old Unix/Linux term that basically means print. We print, or echo the data on any given topic. Let's give it a shot. 
+* Why don't we take a look at `/turtle1/pose/`?
+* First, we'll look at the docs for echo using the `-h` or help flag.
+
+::
+
+   kscottz@ade:~$ ros2 topic echo -h
+   usage: ros2 topic echo [-h] [--csv] [--full-length]
+                          [--truncate-length TRUNCATE_LENGTH]
+                          topic_name [message_type]
+   Output messages from a topic
+   positional arguments:
+     topic_name            Name of the ROS topic to listen to (e.g. '/chatter')
+     message_type          Type of the ROS message (e.g. 'std_msgs/String')
+   optional arguments:
+     -h, --help            show this help message and exit
+     --csv                 Output all recursive fields separated by commas (e.g.
+                           for plotting)
+     --full-length, -f     Output all elements for arrays, bytes, and string with
+                           a length > '--truncate-length', by default they are
+                           truncated after '--truncate-length' elements with
+                          '...''
+     --truncate-length TRUNCATE_LENGTH, -l TRUNCATE_LENGTH
+                          The length to truncate arrays, bytes, and string to
+                          (default: 128)
+			  
+----
+
+====
+Digging into topics 
+====
+
+Let's echo a topic, but there are a couple things to keep in mind!
+
+* You need to give the full path to your topic.
+* *However, you can use tab complete to go fast.*
+* This will spit out **a lot** of data really fast.
+* You can stop the command with **CTRL+C**. This works for almost all CLI programs.
+
+You should see roughly the following...
+
+::
+
+   kscottz@ade:~$ ros2 topic echo /turtle1/pose
+   ---
+   x: 6.5681657791137695     <-- X position of turtle 
+   y: 5.584629058837891      <-- Y position of turtle 
+   theta: 0.2597956657409668 <-- Orientation of turtle
+   linear_velocity: 1.0      <-- Speed 
+   angular_velocity: 0.0     <-- Rotation Speed
+   ---
+   <THIS JUST KEEPS GOING!>
+
+
+Wow! That's a lot of data.
+
+----
+
+====
+Topic Echo Tips / Tricks
+====
+
+Topic echo is handy for a quick checkup to see if a piece of hardware is running and getting a sense of its position, but topics can generate a lot of data. There are some tricks to work with this data.
+
+* You can use unix file pipes to dump the data to file.
+
+  * `ros2 topic echo /turtle2/pose/ > MyFile.txt`
+  * This will output to the file MyFile.txt
+  * `CTRL-C` will still exit the program. 
+  * You can use `less MyFile.txt` to read the file
+  * You can use grep to find a specific line.
+  * Try this: `grep theta ./MyFile.txt`
+
+* Topic echo has some nice flags that are quite handy!
+
+  * The `--csv` flag outputs data in CSV format.
+  * You will still need to use the file pipe mentioned above.
+  * This will allow you to automatically create a spreadsheet of data!
+  * Example: `ros2 topic echo --csv /turtle1/pose > temp.csv`
+
+----
+
+====
+Topic Diagnostics! 
+====
+
+Our Turtle simulation is pretty simple and doesn't generate a lot of data. Camera and LIDAR sensors for autonomous vehicles can generate so much data that they saturate network connections. It is really helpful to have some diagnostic tools. Let's look at a few. 
+
+* The topic bw, or bandwidth command, is used to measure the amount of bandwidth, or network capacity, that a topic uses. It requires a "window size" parameter, which is the number of messages to sample from.
+* Like all CLI commands close it with `CTRL-C`
+
+ 
+::
+
+   kscottz@ade:~$ ros2 topic bw -w 100 /turtle1/pose
+   Subscribed to [/turtle1/pose]
+   average: 1.54KB/s
+        mean: 0.02KB min: 0.02KB max: 0.02KB window: 61
+   average: 1.51KB/s
+        mean: 0.02KB min: 0.02KB max: 0.02KB window: 100
+
+* The topic hz command, or hertz command, is used to measure how frequently a given topic publishes. Frequencies are usually measured in a unit of Hertz, or cycles per second.
+* The hz command will publish the low, high, average, and standard deviation of the message publishing frequency.
+
+::
+
+   kscottz@ade:~$ ros2 topic hz /turtle1/pose 
+   average rate: 63.917
+           min: 0.001s max: 0.017s std dev: 0.00218s window: 65
+   average rate: 63.195
+           min: 0.001s max: 0.017s std dev: 0.00159s window: 128
+
+----
+
+====
+Topic Info 
+====
+
+Another helpful command for inspecting a topic is the info command. The info command lists the number of publishers subscribers
+
+Let's take a quick look:
+
+::
+
+   kscottz@ade:~$ ros2 topic info /turtle1/pose 
+   Topic: /turtle1/pose
+   Publisher count: 1
+   Subscriber count: 1
+
+Another related tool for looking at topics is the `msg show` command. ROS topics use standard messaging formats. If you would like to know the types and format of a message this command will do that. Below is an example for the TurtleSim. Be aware that this tool uses tab completion. If you know don't know where or what you are looking for it can help!
+
+::
+
+   kscottz@ade:~$ ros2 msg show turtlesim/msg/
+   turtlesim/msg/Color  turtlesim/msg/Pose   
+   kscottz@ade:~$ ros2 msg show turtlesim/msg/Pose 
+   float32 x
+   float32 y
+   float32 theta
+   
+   float32 linear_velocity
+   float32 angular_velocity
+
+----
+
+====
+Publishing a Message the Hard Way
+====
+
+* Sometimes when you are debugging and testing you need to send a message manually. 
+* The command is `ros2 topic pub`
+* The format is as follows: `ros2 topic pub <topic_name> <msg_type> <args>`
+* This command is difficult to get right as you have to write the message in YAML format.
+* The `ros2 msg show` command will help with this.
+
+**To run this command you'll need to stop the draw square node. Use F2/F3 to change to the correct screen and then enter `CTRL-C`**
+
+::
+
+   kscottz@ade:~$ ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist '{linear: {x: 2.0,
+   y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}'
+   publisher: beginning loop
+   publishing #1: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0),
+   angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
+
+This command has a lot options that are super helpful for debugging. You can set QoS parameters for the messages, mock the sending node, and modify the publishing rate.
+
+----
+
+====
+====
+
+   
