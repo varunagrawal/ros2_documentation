@@ -73,8 +73,6 @@ Lesson 3: ROS 2 Tooling - Develop Like a Pro
     #. ros2 param list
     #. ros2 param get
     #. ros2 param set
-    #. ros2 param dump
-    #. Parameter Serialization
 #. Logging Data: Secure the Bag
     #. What's a bag?
     #. ros2 bag record

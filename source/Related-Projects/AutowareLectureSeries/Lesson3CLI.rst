@@ -470,6 +470,108 @@ This command has a lot options that are super helpful for debugging. You can set
 ----
 
 ====
+But There is Also a GUI Tool! 
 ====
 
+If the command line isn't your thing quite a few things can be accomplished via the `rqt_gui`. The rqt GUI can be started by running `rqt` in the command line. You'll want to restart the draw square node by running `ros2 run turtlesim draw_square` in the command line. You should be able to press the arrow up key to get the command back.
+
+.. image:: ./images/rqt_start.png
+	   :width: 200
+
+
+RQT starts off blank, so we'll have to turn on the topic tab by clicking `Plugins=>Topics=>Topic Monitor`. Once you do that you should see something like what's below. You may need to resize the window. 
+
+.. image:: ./images/rqt.png
+	   :width: 400
+
+
+----
+
+====
+ROS Parameters
+====
+
+`The full ROS Param tutorial can be found here. <https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/>`_
+
+In ROS, parameters are values that are shared between nodes in the system. If you are familiar with the `blackboard design pattern <https://en.wikipedia.org/wiki/Blackboard_(design_pattern)>`_ in software engineering. Parameters are values that any node can query or write to, another good analogy would be global constants in normal software programs. Parameters are best used to configure your robot. For example, if you were building an autonomous vehicle and wanted to cap the maximum velocity of the vehicle at 100 km/h, you could create a parameter called "MAX_SPEED" that is visible to all teh nodes.
+
+Let's take a look at the high level param program.
+
+::
+
+   kscottz@ade:~$ ros2 param --help
+   Various param related sub-commands
+
+   Commands:
+     delete  Delete parameter
+     get     Get parameter
+     list    Output a list of available parameters
+     set     Set parameter
+     Call `ros2 param <command> -h` for more detailed usage.
+
+----
+
+====
+Params Used By Turtle Sim
+====
+
+Let's see what what the docs say and then see what happens when we call `ros2 param list`
+
+::
+
+   kscottz@ade:~$ ros2 param --help
+   usage: ros2 param [-h]
+   optional arguments:
+     use_sim_time
+   /turtlesim:
+     background_b
+     background_g
+     background_r
+   usage: ros2 param list [-h] [--spin-time SPIN_TIME] [--include-hidden-nodes]
+
+   positional arguments:
+     node_name             Name of the ROS node
+   < CLIPPED >  
+
+   kscottz@ade:~$ ros2 param list 
+   /draw_square:
+     use_sim_time
+   /turtlesim:
+     background_b
+     background_g
+     background_r
+     use_sim_time
+
+----
+
+====
+Let's Try Getting/Setting Parameters 
+====
+
+The syntax for getting a parameter is as follows:
+
+`ros2 param get <node name> <param name>`
+
+Let's give it a shot.
+
+::
    
+   kscottz@ade:~$ ros2 param get /turtlesim background_b
+   Integer value is: 255
+
+Let's try setting a parameter. The syntax for that is as follows:
+
+`ros2 set <node name> <param name> <value>`
+
+::
+   
+   kscottz@ade:~$ ros2 param set /turtlesim background_b 0
+   Set parameter successful
+
+** KAT -- THIS SEEMS TO BE BROKEN!? **
+
+----
+
+====
+Services 
+====
