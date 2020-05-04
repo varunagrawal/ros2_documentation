@@ -908,8 +908,9 @@ With this information we can create our call to the action server. We'll use the
 
 **Keep an eye on your turtle! It should move, slowly.**
 
-::
 
+.. code-block:: shell
+		
    kscottz@ade:~$ ros2 action send_goal -f /turtle1/rotate_absolute turtlesim/action/RotateAbsolute {'theta: 1.70'}
    Waiting for an action server to become available...
    Sending goal:
@@ -935,4 +936,143 @@ With this information we can create our call to the action server. We'll use the
    Goal finished with status: SUCCEEDED
 
 
+----
+
+====
+ROS Bag! 
+====
+
+* ROS Bags are ROS's tool for recording, and replaying data.
+* ROSBags are kinda like log files that let you store data along with messages.
+* ROS systems can generate a lot of data, so you select which topics you want to bag.
+* Bags are a great tool for testing and debugging your application as well.
+
+Let's take a look at the base `bag` verb.
+
+::
+
+   kscottz@ade:~$ ros2 bag -h
+   usage: ros2 bag [-h] Call `ros2 bag <command> -h` for more detailed usage. ...
+
+   Various rosbag related sub-commands
+
+   Commands:
+     info    ros2 bag info
+     play    ros2 bag play
+     record  ros2 bag record
+
+----
+
+====
+Let's Try Recording our First Bag
+====
+
+First use `F2` or `F3` to go to the other terminal. Start the draw square demo again to get the default turtle movign.
+
+The command for that is: `ros2 run turtlesim draw_square`
+
+Now let's look at `ros2 bag -h`
+
+::
+
+   kscottz@ade:~$ ros2 bag record -h
+   usage: ros2 bag record [-h] [-a] [-o OUTPUT] [-s STORAGE]
+                          [-f SERIALIZATION_FORMAT] [--no-discovery]
+			  [-p POLLING_INTERVAL]
+			  [topics [topics ...]]
+   ros2 bag record
+   positional arguments:
+     topics                topics to be recorded
+   optional arguments:
+     -a, --all             recording all topics, required if no topics are listed explicitly.
+     -o OUTPUT, --output OUTPUT
+                           destination of the bagfile to create, defaults to a
+                           timestamped folder in the current directory
+     -s STORAGE, --storage STORAGE
+                           storage identifier to be used, defaults to "sqlite3"
+     -f SERIALIZATION_FORMAT, --serialization-format SERIALIZATION_FORMAT
+                           rmw serialization format in which the messages are
+                           saved, defaults to the rmw currently in use
+----
+
+====
+Let's Bag!
+====
+
+* Let's bag the pose data on the `/turtle1/pose topic`
+* Save the data to the directory `turtle1.bag` using the `-o` flag.
+* The program will bag until you hit `CTRL-C`. Give it a good 30 seconds. 
+  
+Here's my example. 
+::
+
+   kscottz@ade:~$ ros2 bag record /turtle1/pose -o turtle1
+   [INFO] [rosbag2_storage]: Opened database 'turtle1'.
+   [INFO] [rosbag2_transport]: Listening for topics...
+   [INFO] [rosbag2_transport]: Subscribed to topic '/turtle1/pose'
+   [INFO] [rosbag2_transport]: All requested topics are subscribed. Stopping discovery...
+   ^C[INFO] [rclcpp]: signal_handler(signal_value=2)
+
+----
+
+====
+Let's inspect our bag. 
+====
+
+You can introspect any bag file using the `ros2 bag info command`. This command will list the messages in the bag, the duration of file, and the number of messages. 
+
+::
+
+   kscottz@ade:~$ ros2 bag info turtle1
+   Files:             turtle1.db3
+   Bag size:          268.4 KiB
+   Storage id:        sqlite3
+   Duration:          68.705s
+   Start:             May  4 2020 16:10:26.556 (1588633826.556)
+   End                May  4 2020 16:11:35.262 (1588633895.262)
+   Messages:          4249
+   Topic information: Topic: /turtle1/pose | Type: turtlesim/msg/Pose | Count: 4249 | Serialization Format: cdr
+
+----
+
+====
+Replaying a Bag
+====
+
+Bags are a great tool for debugging and testing. You can treat a ROS bag like a recording of a running ROS system. When you play a bag file you can use most of the ros 2 cli tools inspect the recorded topics.
+
+To replay the bag, first use `F2/F3` and `Ctrl-C` to turn off the main turtle node and the draw_square node.
+
+Now in a new terminal replay the bag file using the following command:
+
+::
+
+   kscottz@ade:~$ ros2 bag play turtle1
+   [INFO] [rosbag2_storage]: Opened database 'turtle1'.
+
+Nothing should happen visibly, but a lot is happening under the hood. Use `F2` or `F3` to go to a second terminal. Just like a running robot, you should be able `list` and `echo` topics.
+
+::
+
+   kscottz@ade:~ros2 topic list 
+   /parameter_events
+   /rosout
+   /turtle1/pose
    
+   kscottz@ade:~$ ros2 bag info turtle1
+   x: 3.8595714569091797
+   y: 3.6481313705444336
+   theta: -1.2895503044128418
+   linear_velocity: 1.0
+   angular_velocity: 0.0
+   ---
+
+Pretty cool right?
+
+You can kill the bag file with `CTRL-C`.
+
+----
+
+====
+====
+
