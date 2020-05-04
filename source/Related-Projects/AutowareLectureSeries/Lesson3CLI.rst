@@ -718,3 +718,221 @@ Service Call Result
 ====
 More Complex Service Calls
 ====
+
+Next we're going to try a more complex service call that requires an actual message. For this example we'll use the spawn service that creates a new turtle.
+
+The spawn service, looking at our `ros2 service list` call uses a `[turtlesim/srv/Spawn]` message.
+
+The best way to determine the name of a service is to use the `srv` verb in ROS 2.
+
+The way we do this is running `ros2 srv show turtlesim/srv/Spawn`.
+
+::
+
+   kscottz@ade:~$ ros2 srv show turtlesim/srv/Spawn
+   float32 x
+   float32 y
+   float32 theta
+   string name # Optional.  A unique name will be created and returned if this is empty
+   ---
+   string 
+
+We can see now that this message takes an x,y position, an angle theta, and an optional name. The service will return a string (as noted by the string below the `---`)
+
+
+----
+
+====
+Services with Complex Messages
+====
+
+
+The format of the message is YAML inside quotation marks. Following from the information above let's make a few turtles.
+
+::
+
+   string namekscottz@ade:~$ ros2 service call /spawn turtlesim/srv/Spawn "{x: 2, y: 2, theta: 0.2, name: 'larry'}"
+   waiting for service to become available...
+   requester: making request: turtlesim.srv.Spawn_Request(x=2.0, y=2.0, theta=0.2, name='larry')
+
+   response:
+   turtlesim.srv.Spawn_Response(name='larry')
+
+   kscottz@ade:~$ ros2 service call /spawn turtlesim/srv/Spawn "{x: 3, y: 3, theta: 0.3, name: 'moe'}"
+   waiting for service to become available...
+   requester: making request: turtlesim.srv.Spawn_Request(x=3.0, y=3.0, theta=0.3, name='moe')
+
+   response:
+   turtlesim.srv.Spawn_Response(name='moe')
+
+   kscottz@ade:~$ ros2 service call /spawn turtlesim/srv/Spawn "{x: 4, y: 3, theta: 0.4, name: 'curly'}"
+   waiting for service to become available...
+   requester: making request: turtlesim.srv.Spawn_Request(x=4.0, y=3.0, theta=0.4, name='curly')
+   
+   response:
+   turtlesim.srv.Spawn_Response(name='curly')
+   
+   kscottz@ade:~$ 
+
+----
+
+====
+Service Call Results!
+====
+
+**If everything went well we should see something like this.**
+
+
+.. image:: ./images/four_turtles.png
+	   :width: 400
+
+	      
+*We've now created four turtles!*
+
+----
+
+====
+ROS Action CLI
+====
+
+ROS Actions and Services are very similar in terms of what they do and likewise their APIs are also fairly similar. 
+
+ROS actions are the prefered tool for *asynchronus* tasks while services are the preffered means of deploying *synchronus* tasks.
+
+In more practical terms services should be used for quick, short tasks, while actions should be used for long term behaviors (like moving to a waypoint).
+
+The other big difference between actions and services, is that actions can send periodic updates about their progress.
+
+::
+
+   kscottz@ade:~$ ros2 action -h
+   
+   Various action related sub-commands
+
+   Commands:
+     info       Print information about an action
+     list       Output a list of action names
+     send_goal  Send an action goal
+     show       Output the action definition
+
+** Looks familiar! Let's dif into list, and info. **
+
+
+----
+
+====
+Actions: List & Info  
+====
+
+Let's see what actions are availabe to us using `ros2 action list`
+
+::
+
+   kscottz@ade:~$ ros2 action list
+   /curly/rotate_absolute
+   /larry/rotate_absolute
+   /moe/rotate_absolute
+   /turtle1/rotate_absolute
+
+We see each of our turtles have one service called `rotate_absolute`. Let's dig into this action using the info verb. This command has a `-t` flag to list the types of messages.
+
+::
+   
+   kscottz@ade:~$ ros2 action info /moe/rotate_absolute -t
+   Action: /moe/rotate_absolute
+   Action clients: 0
+   Action servers: 1
+     /turtlesim [turtlesim/action/RotateAbsolute]
+
+Interesting, what do these terms mean. The first line lists the action name. The second line gives the current number of clients for the action. The `Action servers` line gives the total number of action servers for this action. The last line gives the package and message type for the action.
+
+----
+
+====
+Calling an Action and Giving it a Goal 
+====
+
+Let's take a look at the `ros2 action send_goal` command help.
+
+::
+   
+   kscottz@ade:~$ ros2 action send_goal -h
+   usage: ros2 action send_goal [-h] [-f] action_name action_type goal
+
+   Send an action goal
+   positional arguments:
+     action_name     Name of the ROS action (e.g. '/fibonacci')
+     action_type     Type of the ROS action (e.g. 'example_interfaces/action/Fibonacci')
+     goal            Goal request values in YAML format (e.g. '{order: 10}')
+
+   optional arguments:
+     -f, --feedback  Echo feedback messages for the goal
+
+We can see here that we need to know the action name, the type, and the values. Now the only problem is figuring out the format of the action_type.     
+
+
+----
+
+====
+Let's understand the RotateAbsolute action message 
+====
+
+The `ros2 action show` command can be used to find the type of action message. Let's take a look. 
+
+::
+
+   kscottz@ade:~$ ros2 action show turtlesim/action/RotateAbsolute
+   # The desired heading in radians
+   float32 theta  #< --- This section is the GOAL 
+   ---
+   # The angular displacement in radians to the starting position
+   float32 delta  #< --- This section is the final result, different from the goal.
+   ---
+   # The remaining rotation in radians
+   float32 remaining # < --- This is the current state. 
+
+
+What does this say about rotate absolute?
+
+* There is a float input, `theta` the desired heading. This first section is the actual goal. 
+* `delta` --  the angle from the initial heading. This is the value returned when the action completes. 
+* `remaining` -- the remaining radians to move. This is the value posted by the action while the action is being done. 
+
+----
+
+====
+Executing the Action 
+====
+
+With this information we can create our call to the action server. We'll use the `-f` flag to make this a big clearer.
+
+**Keep an eye on your turtle! It should move, slowly.**
+
+::
+
+   kscottz@ade:~$ ros2 action send_goal -f /turtle1/rotate_absolute turtlesim/action/RotateAbsolute {'theta: 1.70'}
+   Waiting for an action server to become available...
+   Sending goal:
+     theta: 1.7
+
+   Feedback:
+     remaining: 0.11599969863891602
+
+   Goal accepted with ID: 35c40e91590047099ae5bcc3c5151121
+
+   Feedback:
+    remaining: 0.09999966621398926
+
+   Feedback:
+    remaining: 0.06799960136413574
+
+   Feedback:
+    remaining: 0.03599953651428223
+
+   Result:
+    delta: -0.09600019454956055
+
+   Goal finished with status: SUCCEEDED
+
+
+   
