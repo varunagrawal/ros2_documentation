@@ -575,3 +575,146 @@ Let's try setting a parameter. The syntax for that is as follows:
 ====
 Services 
 ====
+
+* The full ROS 2 Services tutorials `can be found here. <https://index.ros.org/doc/ros2/Tutorials/Services/Understanding-ROS2-Services/>`_
+
+ROS2 Services, as we have discussed previously, are another level of extraction built on top of ROS 2 topics. At its core, a service is just an API for controlling a robot task.  A good analogy for ROS Services are  `remote procedure calls <https://en.wikipedia.org/wiki/Remote_procedure_call>`_ . Another good analogy for services would be making an REST API call. Curling a remote REST API endpoint to query data on a remote server is very similar to a ROS service. Essentially the ROS API allows every node to publish a list of services, and subscribe to  services from other nodes.
+
+
+The root command for ROS services is the `ros2 service` command. Just like all the other commands we have looked at, let's run `ros2 service --help` to see what we can do.
+
+**An important distinction is between `ros2 srv` and `ros2 service`. The former is for installed services while the latter is for running services. We'll focus on the latter, but `srv` is very similar.**
+
+::
+
+   kscottz@ade:~$ ros2 service --help
+   usage: ros2 service [-h] [--include-hidden-services]
+                       Call `ros2 service <command> -h` for more detailed usage.
+
+   Commands:
+     call  Call a service
+     list  Output a list of available services
+
+* Services look fairly straight forward, with only two commands, `list` and `call`.
+
+----
+
+====
+Listing Available Services 
+====
+
+Let's take a look at what we can do with `ros2 service list`.
+
+::
+
+   kscottz@ade:~$ ros2 service list --help
+   usage: ros2 service list [-h] [--spin-time SPIN_TIME] [-t] [-c]
+
+   Output a list of available services
+
+   optional arguments:
+   
+      -t, --show-types      Additionally show the service type
+      -c, --count-services  Only display the number of services discovered
+
+
+This command is fairly straight forward with only two utility flags. Let's use the `-t` flag
+
+::
+
+   kscottz@ade:~$ ros2 service list -t
+   /clear [std_srvs/srv/Empty]
+   /draw_square/describe_parameters [rcl_interfaces/srv/DescribeParameters]
+   /draw_square/get_parameter_types [rcl_interfaces/srv/GetParameterTypes]
+   /draw_square/get_parameters [rcl_interfaces/srv/GetParameters]
+   /draw_square/list_parameters [rcl_interfaces/srv/ListParameters]
+   /draw_square/set_parameters [rcl_interfaces/srv/SetParameters]
+   /draw_square/set_parameters_atomically [rcl_interfaces/srv/SetParametersAtomically]
+   /kill [turtlesim/srv/Kill]
+   /reset [std_srvs/srv/Empty]
+   /spawn [turtlesim/srv/Spawn]
+   /turtle1/set_pen [turtlesim/srv/SetPen]
+   /turtle1/teleport_absolute [turtlesim/srv/TeleportAbsolute]
+   /turtle1/teleport_relative [turtlesim/srv/TeleportRelative]
+   /turtlesim/describe_parameters [rcl_interfaces/srv/DescribeParameters]
+   /turtlesim/get_parameter_types [rcl_interfaces/srv/GetParameterTypes]
+   /turtlesim/get_parameters [rcl_interfaces/srv/GetParameters]
+   /turtlesim/list_parameters [rcl_interfaces/srv/ListParameters]
+   /turtlesim/set_parameters [rcl_interfaces/srv/SetParameters]
+   /turtlesim/set_parameters_atomically [rcl_interfaces/srv/SetParametersAtomically]
+
+
+----
+
+====
+Calling a ROS 2 Service
+====
+
+Let's explore the `ros2 service call` command.
+
+
+::
+   
+   kscottz@ade:~$ ros2 service call -h
+   usage: ros2 service call [-h] [-r N] service_name service_type [values]
+
+   Call a service
+   positional arguments:
+     service_name    Name of the ROS service to call to (e.g. '/add_two_ints')
+     service_type    Type of the ROS service (e.g. 'std_srvs/srv/Empty')
+     values          Values to fill the service request with in YAML format (e.g.
+                     "{a: 1, b: 2}"), otherwise the service request will be
+                     published with default values
+
+   optional arguments:
+     -r N, --rate N  Repeat the call at a specific rate in Hz
+
+The format is pretty straight forward:
+
+`ros2 service call <service_name> <service_type> [values]`
+
+----
+
+====
+Basic Example, Blank Services. 
+====
+
+* If we look at the list of services we see a `/reset/` service that has the type `[std_srvs/srv/Empty]`.
+* What this means is that this service can be called with an empty message.
+* It is worth noting that a empty message still has a type, it is just that the type is empty.
+* Our turtle has been draw a box for a while, why don't we see if we can reset the screen?
+
+  * First kill the draw_square node. Use `F3` to go to the right window.
+  * Now use `CTRL-C` to stop the program. 
+
+Why don't we give it a call. The empty service message can be found in `std_srvs/srv/Empty`, thus our call is as follows:
+
+::
+
+   kscottz@ade:~$ ros2 service call /reset std_srvs/srv/Empty
+   waiting for service to become available...
+   requester: making request: std_srvs.srv.Empty_Request()
+
+   response:
+   std_srvs.srv.Empty_Response()
+
+
+----
+
+====
+Service Call Result
+====
+
+
+.. image:: ./images/reset_service.png
+	   :width: 800
+
+**The service reset the screen, and changed our turtle icon!**
+
+*Try toggling the `draw_square` program and the `reset` service a few times.*
+
+----
+
+====
+More Complex Service Calls
+====
