@@ -180,13 +180,15 @@ Let's Get Started
 
 As we're diving headfirst into ROS our first job is to checkout a repository of examples and build it. Roughly the steps to do this are as follows. 
 
+* Fire up a terminal manager inside the container. I use byobu. You can use whatever you want. You can also fire up 3 real terminals and call `ade enter` on them. 
 * Source the ROS setup.bash file so we have the right version of ROS in our path.
 * Make a workspace called `ros2_example_ws`. We usually use `_ws` to indicate a workspace.
 * Clone an example repository and change to the dashing branch.
 
   * Generally ROS repos have a branch per release. 
 
-* Use Colcon to build the source. 
+* Use Colcon to build the source.
+  
 ::
    
    source /opt/ros/dashing/setup.bash
@@ -200,6 +202,218 @@ As we're diving headfirst into ROS our first job is to checkout a repository of 
 
 ----
 
+====
+Let's Learn about Nodes and Publishers together!
+====
+
+* The core of ROS is the ROS pub/sub bus. In ROS parlance this is called `topic`.
+
+  * A topic has a `message type` that is published on the bus. These messages are defined in a yaml file and define the serialization/deserialization format for ROS messages.
+  * ROS has a lot of built in message types. There are lots of pre-defined messages for controlling a robot, distributing sensor data, and understanding the geometry of your robot.
+  * ROS publishers produce messages and slowly or as quickly as they need to.
+  * A ROS subscriber, `subscribes` to a `topic` and then does things with the information.
+
+* ROS has lots of built-in tools for managing topics. You can list them, echo (watch) them, rename them (called remap), and store them to file (called bagging). 
+
+* ROS `Nodes` are basically programs, or processes that run concurrently on ROS.
+
+  * A ROS node can publish to one or more topics.
+  * That same node can subscribe to other topics.
+  * Many nodes subscribe to topics, process the data, and publish the results.
+  * ROS has tooling to start and stop multiple nodes at the same time. 
+
+----
+
+
+====
+Preparing to Run a ROS Node: setup.bash files 
+====
+
+* Open a new terminal, in Byobu you can do this by pressing `F2`.
+* First we need to source the `setup.bash` file for our `workspace.` This will help ROS find the programs we built.
+
+  * `source ./ros2_example_ws/install/setup.bash`
+  * Protip: you can find any file using `find ./ -name <file name>`  
+  
+* **ROS Best Practice** _ALWAYS_ build and execute in different terminals.
+  
+  * The build terminal should source the global ROS setup.bash file (i.e. /opt/ros/dashing/setup.bash).
+  * The execution terminal should source the `setup.bash` of your workspace  
+  * This is a common failure mode for new users. If something seems weird or funky. Create a new terminal and source the correct bash file.
+
+----
+
+====
+Let's Run a Simple C++ Publisher Node. 
+====
+
+* ROS has an advanced, and fairly complex CLI interface. We'll cover it in depth in our next lesson.
+* We are going to ask ros to run the EXECUTABLE `publisher_lambda` in our WORKSPACE named `examples_rclcpp_minimal_publisher`.
+* The syntax for doing this is `ros2 run <WORKSPACE> <EXECUTABLE>`
+* To run our publishing node, let's run the following command in our execution terminal: `ros2 run examples_rclcpp_minimal_publisher publisher_lambda`
+* If everything works you should see something like this:
+
+::
+   
+   kscottz@ade:~$ ros2 run examples_rclcpp_minimal_publisher publisher_lambda 
+   [INFO] [minimal_publisher]: Publishing: 'Hello, world! 0'
+   [INFO] [minimal_publisher]: Publishing: 'Hello, world! 1'
+   [INFO] [minimal_publisher]: Publishing: 'Hello, world! 2'
+   [INFO] [minimal_publisher]: Publishing: 'Hello, world! 3'
+   ...
+
+* To exit the program press `CTRL-C`
+
+----
+
+====
+What just happened?
+====
+
+* We just executed a ROS node that publishes a simple string message to a topic called `/topic` twice a second.
+* I'll show you how I know this with some tools. We'll cover these tools in detail next time.
+
+::
+
+   kscottz@ade:~$ ros2 topic list
+   /parameter_events
+   /rosout
+   /topic
+   kscottz@ade:~$ ros2 topic echo /topic
+   data: Hello, lambda world! 63
+   ---
+   data: Hello, lambda world! 64
+   ---
+   data: Hello, lambda world! 65
+   ---
+   kscottz@ade:~$ ros2 topic hz /topic 
+   average rate: 2.000
+   min: 0.500s max: 0.500s std dev: 0.00011s window: 4
+   kscottz@ade:~$ 
+   
+----
+
+====
+Digging into the Code
+====
+
+* Let's take a look at the code. Like a lot of software there is more than one way to skin a cat. Let's look at the member function approach.
+* Using your favorite editor open the folloing source file, `./ros2_example_ws/src/examples/rclcpp/minimal_publisher/member_function.cpp`
+* **rclcpp** is an abbreviation of "ROS Client Library C++", its the ROS C++ API
+  
+.. code-block:: c++
+   :linenos:
+      
+   #include <chrono>
+   #include <memory>
+
+   #include "rclcpp/rclcpp.hpp" // THIS the header file for the ROS 2 C++ API
+   #include "std_msgs/msg/string.hpp" // This is header for the messages we want to user
+                                      // These are usually auto generated. 
+
+   using namespace std::chrono_literals;
+
+   /* This example creates a subclass of Node and uses std::bind() to register a
+   * member function as a callback from the timer. */
+                                                   // Make a class called Minimal Publisher
+     class MinimalPublisher : public rclcpp::Node  // Have it inherit from the ROS Node Class
+     
+----
+
+====
+Let's Build our Node's Constructor
+====
+
+* The `MinimalPublisher` constructor inherits fomr the RCLCPP Base Class, gives the name a node, and sets our counter.
+* The next line creates a publisher object that publishes `std_msgs::msg`.
+* The constructor then creates a callback to the function `timer_callback` that gets called every 500ms. 
+
+
+.. code-block:: c++
+   :linenos:
+
+      class MinimalPublisher : public rclcpp::Node // Inherit from ROS Node
+      {
+      public:
+        MinimalPublisher()
+        : Node("minimal_publisher"), count_(0) // Set the node name
+        {   //Create a publisher that pushes std_msgs::msg to the topic "topic" 
+	    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10); 
+            timer_ = this->create_wall_timer( // Call timer_callback every 500ms
+              500ms, std::bind(&MinimalPublisher::timer_callback, this));
+        }
+
+----
+	
+====
+Now to Handle the Callback
+====
+
+* In the callback function we do the following:
+
+  * Create the ROS `std_msgs::msg::String()` to send to our topic.  
+  * Construct the message that will be pushed to the ROS Topic
+  * Log the results.
+  * Actually publish the newly constructed message.  
+
+.. code-block:: c++
+   :linenos:
+
+   private:
+       void timer_callback()
+       {
+         auto message = std_msgs::msg::String(); // create message
+         message.data = "Hello, world! " + std::to_string(count_++); // Fill it up
+         RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str()); // Log it
+         publisher_->publish(message); // Publish
+       }
+       // Create our private member variables. 
+       rclcpp::TimerBase::SharedPtr timer_;
+       rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+       size_t count_;
+
+----
+
+====
+Finally, Let's Create the Main Node Entry Point!
+====
+
+* This last little bit creates the main node entry point.
+* Initializes `rcpcpp` with the values from the command line.
+* Run's the MinimalPublisher, until a terminate is given
+* Finally the node cleans up everything and exits. 
+
+.. code-block:: c++
+   :linenos:
+   int main (int argc, char * argv[])
+   {
+     rclcpp::init(argc, argv); # Init RCL
+     rclcpp::spin(std::make_shared<MinimalPublisher>()); # Run the minimal publish
+     rclcpp::shutdown(); # Cleanup on shut down.
+     return 0;
+   }
+
+----
+
+====
+Exercise:  Modify and Build this Node
+====
+* Let's try to make a few modification to our node for practice.
+
+  * Make it run at 10Hz (100ms) insteand of 500.
+  * Change the topic name from "topic" to "greetings."
+  * Change the message "Hello Open Road."
+  * Change the node name from `minimal_publisher`, `revenge_of_minimal_publisher`
+
+* Once you make these changes
+  
+  * Save the file.
+  * Toggle over to your execution window run
+  * Run `colcon build`
+  * In your execution window run `ros2 run examples_rclcpp_minimal_publisher publisher_member_function`
+  
+
+   
 #. What is a robot?
 #. History of ROS
 #. ROS 2: Production Ready Boogaloo
