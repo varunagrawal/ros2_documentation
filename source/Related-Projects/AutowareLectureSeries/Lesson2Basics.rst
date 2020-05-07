@@ -359,7 +359,7 @@ Now to Handle the Callback
 .. code-block:: c++
    :linenos:
 
-   private:
+      private:
        void timer_callback()
        {
          auto message = std_msgs::msg::String(); // create message
@@ -375,7 +375,7 @@ Now to Handle the Callback
 ----
 
 ====
-Finally, Let's Create the Main Node Entry Point!
+Finally, Let's Create the Main for our Node
 ====
 
 * This last little bit creates the main node entry point.
@@ -385,13 +385,14 @@ Finally, Let's Create the Main Node Entry Point!
 
 .. code-block:: c++
    :linenos:
-   int main (int argc, char * argv[])
-   {
-     rclcpp::init(argc, argv); # Init RCL
-     rclcpp::spin(std::make_shared<MinimalPublisher>()); # Run the minimal publish
-     rclcpp::shutdown(); # Cleanup on shut down.
-     return 0;
-   }
+      
+     int main (int argc, char * argv[])
+     {
+       rclcpp::init(argc, argv); # Init RCL
+       rclcpp::spin(std::make_shared<MinimalPublisher>()); # Run the minimal publish
+       rclcpp::shutdown(); # Cleanup on shut down.
+       return 0;
+     }
 
 ----
 
@@ -413,57 +414,186 @@ Exercise:  Modify and Build this Node
   * In your execution window run `ros2 run examples_rclcpp_minimal_publisher publisher_member_function`
   
 
+----
+
+====
+Let's Try Subscribing. 
+====
+
+* The pattern here is similar to publishing.
+* We basically inherit from the Node class, and define the topic and message we want.
+* Whenever that topic is published we hit a callback.
+* If everything is correctly configured the file is at
+
+  * /ros2_example_ws/src/examples/rclcpp/minimal_subscriber/member_function.cpp
+
+
+.. code-block:: c++
+   :linenos:
+      
+      #include <memory>
+
+      #include "rclcpp/rclcpp.hpp"
+      #include "std_msgs/msg/string.hpp"
+      using std::placeholders::_1;
+
+      // Again we inherit the public interface of a ROS node. 
+      class MinimalSubscriber : public rclcpp::Node
+      {
+        public:
+        MinimalSubscriber() // Construct our node, calling it minimal_subscriber
+        : Node("minimal_subscriber")
+        { // Create a subscription, to messages of the format stdmsg:msg:String
+          subscription_ = this->create_subscription<std_msgs::msg::String>(
+	  // Subscribe to the topic, "topic" and set a callback for when things are pub'd 
+	  "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+	}
+      ...
+
+----
+
+====
+More Subscriber
+====
+
+* The subscriber node looks fairly similar to our publisher but instead of publishing on a regular callback, we get a callback when a new messae hits our topic. 
+
+.. code-block:: c++
+   :linenos:
+      
+   private:
+     // Whenever we get a new messaged published on our topic
+     // this callback will be executed.    
+     void topic_callback(const std_msgs::msg::String::SharedPtr msg) const
+     {
+       // Log the message that we are subscribed to 
+       RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->data.c_str());
+     }
+     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+   };
+
+   // This is effectively the same boiler plate from last time. 
+   int main(int argc, char * argv[])
+   {
+     rclcpp::init(argc, argv);
+     rclcpp::spin(std::make_shared<MinimalSubscriber>());
+     rclcpp::shutdown();
+     return 0;
+   }
+
+----
+
+====
+Let's Modify the Subscriber
+====
+
+* In the publisher we changed the name of our publisher topic to `greetings.`
+* Let's change the subscribed topic to `greetings`.
+* Note that there are a lot of ways to change topic names, modifying source is just one approach. Offten we just `remap` topics instead of changing source.
+
+
+* Once you have modified the subscriber run `colocon build ` (it will build everything)
+* Open another terminal, source the bash file, and start the publisher.
+
+  * `ros2 run examples_rclcpp_minimal_publisher publisher_member_function`
+  
+* Now run our subscriber.
+  
+  * `ros2 run examples_rclcpp_minimal_subscriber subscriber_member_function`
+
+
+----
+
+====
+The Result
+====
+
+If everything went well you should have two screens. The first screen with the publisher should be spitting out the following
+
+.. code-block:: bash
+
+   [INFO] [revenge_of_minimal_publisher]: Publishing: 'Hello, Open Road! 1000'
+   [INFO] [revenge_of_minimal_publisher]: Publishing: 'Hello, Open Road! 1001'
+   [INFO] [revenge_of_minimal_publisher]: Publishing: 'Hello, Open Road! 1002'
+   [INFO] [revenge_of_minimal_publisher]: Publishing: 'Hello, Open Road! 1003'
+   [INFO] [revenge_of_minimal_publisher]: Publishing: 'Hello, Open Road! 1004'
+
+The subscriber screen should be pushing out:
+
+.. code-block:: bash
+
+   [INFO] [minimal_subscriber]: I heard: 'Hello, Open Road! 1000'
+   [INFO] [minimal_subscriber]: I heard: 'Hello, Open Road! 1001'
+   [INFO] [minimal_subscriber]: I heard: 'Hello, Open Road! 1002'
+   [INFO] [minimal_subscriber]: I heard: 'Hello, Open Road! 1003'
+   [INFO] [minimal_subscriber]: I heard: 'Hello, Open Road! 1004'
+
+**You can terminate both of these programs with `CTRL-C`**
+
+*Congratulations, you now know the three most important ROS components, nodes, publishers, and subscribers. 
    
-#. What is a robot?
-#. History of ROS
-#. ROS 2: Production Ready Boogaloo
-    #. Maturity
-    #. Security
-    #. RTOS Support
-    #. Portability
-#. 30 Minutes of Robotics Concepts
-    #. Concurrency (not your problem)
-    #. Message Passing / Buses
-    #. Black Boards
-    #. State Machines
-    #. Real Time (not really)
-#. Pillars of ROS
-    #. Nodes
-    #. Messages and Topics
-    #. Services
-    #. Actions
-    #. Parameters
-#. Playing Well With Others
-    #. Packages
-    #. Workspaces
-    #. Run-Time Tools
-
-====
-ROS 2 Tooling: Introduction to CLI and friends
-====
-
-#. Overview and Motivating Concepts
-    #. The Command Line
-    #. Environment Variables
-
 ----
 
 ====
-The Command Line
+Making Things Happen with Services
 ====
 
-* ROS is effectively Linux for Robots.
-* From Last Time:
-
-  * ROS has your cross platform build tools.
-  * ROS has ployglot builds.
-
-* Now lets talk about runtime.
-
-  * ROS presents command line interface (CLI) for robot execution.
-  * Most of these commands follow a regular format.
-  * These commands have auto-tab complete (yay!)
-  * Most blank commands will spit out error or info.
-  * Most commands will behave nicely with `--help`
+* Publishing and subscribing nodes are the bread and butter of ROS. This pattern is great for moving around a lot of data, and processing it quickly.
+* However, we often want our robots to respond to data. To construct simple behaviors in ROS we use `services.
+* A service is a robotic task that can be performed _synchronusly_, which is just afancy word for `while you wait.
+* A good analogy for services would be a regular old function call. In most programs when you call a function, the code making the call waits for the function to return before proceeding.
+* A few toy examples of services for autonomous driving would be:
+  
+  * Turning Lights Off/On.
+  * Checking a sensor and returning the results.
+  * Lock / Unlock a door or window.
+  * Beeping a horn.
     
+* Services can be called via the command line or through an API call within another node. 
+* In ROS services are hosted within a ROS Node, and they can co-exist with other services as well as publishers and subscribers.
+
 ----
+
+====
+C++ Service Example
+====
+
+* As a toy example of a ROS service we are going to make a node that offers an "AddTwoInts" service.
+* What will happen is the service has two inputs, and returns a single output.
+
+In your terminal navigate to the following file and open it in your favorite editor or use the `less` command to peek inside.
+
+`ros2_example_ws/src/examples/rclcpp/minimal_service/main.cpp`
+
+The source should look like this:
+
+
+
+
+
+----
+
+====
+====
+
+.. code-block:: c++
+   :linenos:
+      
+      #include <inttypes.h>
+      #include <memory>
+      #include "example_interfaces/srv/add_two_ints.hpp"
+      #include "rclcpp/rclcpp.hpp"
+
+      using AddTwoInts = example_interfaces::srv::AddTwoInts;
+      rclcpp::Node::SharedPtr g_node = nullptr;
+
+      void handle_service(
+        const std::shared_ptr<rmw_request_id_t> request_header,
+        const std::shared_ptr<AddTwoInts::Request> request,
+        const std::shared_ptr<AddTwoInts::Response> response)
+      {
+        (void)request_header;
+        RCLCPP_INFO( g_node->get_logger(),
+	"request: %" PRId64 " + %" PRId64, request->a, request->b);
+	response->sum = request->a + request->b;
+      }
