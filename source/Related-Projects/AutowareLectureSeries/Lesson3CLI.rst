@@ -2,14 +2,14 @@
 ROS 2 Tooling: Introduction to CLI and friends
 ====
 
-#. Overview and Motivating Concepts
-    #. The Command Line
-    #. Environment Variables
+#. Overview and motivating concepts
+    #. The command line
+    #. Environment variables
 
 ----
 
 ====
-The Command Line
+The command line
 ====
 
 * ROS is effectively Linux for Robots.
@@ -24,7 +24,7 @@ The Command Line
   * Most of these commands follow a regular format.
   * These commands have auto-tab complete (yay!)
   * Most blank commands will spit out error or info.
-  * Most commands will behave nicely with `--help`
+  * Most commands will behave nicely with ``--help``
     
 ----
 
@@ -32,7 +32,7 @@ The Command Line
 *Example of --help* 
 ====
 
-Here is ros2 --help::
+Here is ros2 ``--help``::
   
   kscottz@ade:~$ ros2 --help
   usage: ros2 [-h] Call `ros2 <command> -h` for more detailed usage. ...
@@ -68,12 +68,12 @@ That's all your commands!
 ----
 
 =========
-ROS 2 Run
+ROS 2 run
 =========
 
-`ros2 run` is used to execute ROS nodes.
+``ros2 run`` is used to execute ROS nodes.
 
-General format is `ros2 run <package_name> <executable_name> <flags>`
+General format is ``ros2 run <package_name> <executable_name> <flags>``
 
 * *TAB COMPLETIONS!* are baked in.
 * Generally if tabbing works, you are good to go.
@@ -81,7 +81,7 @@ General format is `ros2 run <package_name> <executable_name> <flags>`
 * Don't know the executables in a package?
   * **TRY TABBING!!!**
 * Why don't we try starting this `turtlesim node`.
-* In your terminal type `ros2 run turtlesim turtlesim_node`
+* In your terminal type ``ros2 run turtlesim turtlesim_node``
 
 ----
 
@@ -89,22 +89,22 @@ General format is `ros2 run <package_name> <executable_name> <flags>`
 TA-DA! A wild ROS turtle appears
 =====
 
-* When you run this `ros2 run turtlesim turtlesim_node`, this should happen:
+* When you run ``ros2 run turtlesim turtlesim_node``, this should happen:
 
 .. image:: ./images/turtlesim_start.png
 	   :width: 200
 	   
-* This is cool, this is our simple virtual turtle. Don't worry if the turtle looks different.  Let's make the turtle move. 
+* This is our simple virtual turtle. Don't worry if the turtle looks different.  Let's make the turtle move. 
 
-  * In byobu press `F2` to create a new terminal.
-  * source `source /opt/ros/dashing/setup.bash`
-  * We're going to run another node, let's check out this `draw_square`.
-  * `ros2 run turtlesim draw_square`
+  * Press ``F2`` to create a new terminal.
+  * Source ``source /opt/ros/dashing/setup.bash``
+  * We're going to run another node, let's check out this ``draw_square``.
+  * ``ros2 run turtlesim draw_square``
 
 ----
 
 ====
-Moving your Turtle
+Moving your turtle
 ====
 
 If everything is setup correctly your turtle should move. 
@@ -112,34 +112,34 @@ If everything is setup correctly your turtle should move.
 .. image:: ./images/turtlesim_square.png
 	   :width: 800
 
-You can stop the simulation using *`CTRL-C`*
+You can stop the simulation using ``CTRL+C``
 		   
 
 ----
 
 ====
-Let's Explore What is Happening 
+Let's explore what's happening 
 ====
 
-* We have two terminals open running two "programs" running.
+* We have two terminals open, running two "programs".
 
-  * We have the `turtlesim` "program" running in the first terminal.
-  * The `draw_square` "program" is running in a second terminal.
+  * We have the ``turtlesim`` "program" running in the first terminal.
+  * The ``draw_square`` "program" is running in a second terminal.
   * The two are communicating over ros topics.
   
-* _What if we didn't know what was going on?_
-* What if we worked with a large team and a lot of programs, or nodes, were created by our team mates.
+* *What if we didn't know what was going on?*
+* What if we worked with a large team and a lot of programs, or nodes, were created by our team mates?
 
-**How can we figure out what _nodes_ are running on our simulated robot?**
+**How can we figure out what nodes are running on our simulated robot?**
 
 ----
 
 ====
-Inspecting Nodes 
+Inspecting nodes 
 ====
 
-* Open a new terminal by press `F2`
-* Source your bash file `source /opt/ros/dashing/setup.bash`
+* Open a new terminal by pressing ``F2``
+* Source your bash file ``source /opt/ros/dashing/setup.bash``
 
 Let's try inspecting our running nodes::
 
@@ -163,10 +163,10 @@ Let's try inspecting our running nodes::
 ----
 
 ====
-Let's Try Node List
+Let's try node list
 ====
 
-Let's Try ros2 node list.::
+Let's try ``ros2 node list``::
 
   kscottz@ade:~$ ros2 node list
   /draw_square  <== This is the node moving the turtle.
@@ -179,10 +179,10 @@ Can we dig down deeper into each of these nodes?
 ----
 
 ====
-Let's try Node Info
+Let's try node info
 ====
 
-Let's try this ros2 node info command!
+Let's try this ``ros2 node info`` command!
 
 
 .. image:: ./images/node_info.png
@@ -200,12 +200,12 @@ Let's try this ros2 node info command!
 ----
 
 ====
-What about non CLI Options?
+What about non CLI options?
 ====
 
 * Understanding complex graphs as a list of node and topic names in our shell is really hard.
-* Good news: we have GUI tool!
-* Type `rqt_graph` in the terminal.
+* Good news: we have a GUI tool!
+* Type ``rqt_graph`` in the terminal.
 * The little double arrow in the top left will load nodes. 
 
 .. image:: ./images/rqt_graph.png
@@ -214,11 +214,11 @@ What about non CLI Options?
 ----
 
 ====
-ROS Topic CLI Interface 
+ROS topic CLI interface 
 ====
 
 * Recall from last lesson that ROS topics are short hand for the ROS pub/sub bus.
-* ROS Topics By Analogy
+* ROS topics by analogy:
 
   * If you have worked with `RabbitMQ <https://en.wikipedia.org/wiki/RabbitMQ>`_ or `ZeroMQ <https://en.wikipedia.org/wiki/ZeroMQ>`_ it is very similar.
   * In terms of hardware if you have worked with `ModBus <https://en.wikipedia.org/wiki/Modbus>`_ ROS topics are the software equivalent.
@@ -235,7 +235,7 @@ ros2 topic *<xxxx>*
 
 Let's use help to see our options for this command.
 
-In your terminal run `ros2 topic -h`
+In your terminal run ``ros2 topic -h``
 
 Try this::
   
@@ -258,7 +258,7 @@ Try this::
 
     Call `ros2 topic <command> -h` for more detailed usage.
 
-Interesting, some let us to "introspect" the messages, look at performance, and even send off our own messages. 
+Interesting, some let us "introspect" the messages, look at performance, and even send off our own messages. 
 
 ----
 
@@ -266,7 +266,7 @@ Interesting, some let us to "introspect" the messages, look at performance, and 
 Let's look at the topics in TurtleSim
 ====
 
-Let's start with rostopic list.
+Let's start with ``ros2 topic list``.
 
 ::
    
@@ -292,7 +292,7 @@ Let's start with rostopic list.
    /turtle1/pose      
    kscottz@ade:~$ 
 
-One thing of interest, note how `/turtle1/` is in front of the last three topics. We call this a namespace.
+One thing of interest, note how ``/turtle1/`` is in front of the last three topics. We call this a namespace.
 
 ----
 
@@ -301,8 +301,8 @@ Digging into topics
 ====
 
 * *Echo* is an old Unix/Linux term that basically means print. We print, or echo the data on any given topic. Let's give it a shot. 
-* Why don't we take a look at `/turtle1/pose/`?
-* First, we'll look at the docs for echo using the `-h` or help flag.
+* Why don't we take a look at ``/turtle1/pose/``?
+* First, we'll look at the docs for echo using the ``-h`` or help flag.
 
 ::
 
@@ -326,18 +326,13 @@ Digging into topics
                           The length to truncate arrays, bytes, and string to
                           (default: 128)
 			  
-----
-
-====
-Digging into topics 
-====
 
 Let's echo a topic, but there are a couple things to keep in mind!
 
 * You need to give the full path to your topic.
 * *However, you can use tab complete to go fast.*
 * This will spit out **a lot** of data really fast.
-* You can stop the command with **CTRL+C**. This works for almost all CLI programs.
+* You can stop the command with ``CTRL+C``. This works for almost all CLI programs.
 
 You should see roughly the following...
 
@@ -359,37 +354,41 @@ Wow! That's a lot of data.
 ----
 
 ====
-Topic Echo Tips / Tricks
+Topic echo tips / tricks
 ====
 
-Topic echo is handy for a quick checkup to see if a piece of hardware is running and getting a sense of its position, but topics can generate a lot of data. There are some tricks to work with this data.
+Topic echo is handy for a quick checkup to see if a piece of hardware is running and getting a sense of its position, but topics can generate a lot of data. 
+There are some tricks to work with this data.
 
 * You can use unix file pipes to dump the data to file.
 
-  * `ros2 topic echo /turtle2/pose/ > MyFile.txt`
+  * ``ros2 topic echo /turtle2/pose/ > MyFile.txt``
   * This will output to the file MyFile.txt
-  * `CTRL-C` will still exit the program. 
-  * You can use `less MyFile.txt` to read the file
+  * ``CTRL+C`` will still exit the program. 
+  * You can use ``less MyFile.txt`` to read the file
   * You can use grep to find a specific line.
-  * Try this: `grep theta ./MyFile.txt`
+  * Try this: ``grep theta ./MyFile.txt``
 
 * Topic echo has some nice flags that are quite handy!
 
-  * The `--csv` flag outputs data in CSV format.
+  * The ``--csv`` flag outputs data in CSV format.
   * You will still need to use the file pipe mentioned above.
   * This will allow you to automatically create a spreadsheet of data!
-  * Example: `ros2 topic echo --csv /turtle1/pose > temp.csv`
+  * Example: ``ros2 topic echo --csv /turtle1/pose > temp.csv``
 
 ----
 
 ====
-Topic Diagnostics! 
+Topic diagnostics! 
 ====
 
-Our Turtle simulation is pretty simple and doesn't generate a lot of data. Camera and LIDAR sensors for autonomous vehicles can generate so much data that they saturate network connections. It is really helpful to have some diagnostic tools. Let's look at a few. 
+Our Turtle simulation is pretty simple and doesn't generate a lot of data. 
+Camera and LIDAR sensors for autonomous vehicles can generate so much data that they saturate network connections. 
+It is really helpful to have some diagnostic tools. 
+Let's look at a few. 
 
-* The topic bw, or bandwidth command, is used to measure the amount of bandwidth, or network capacity, that a topic uses. It requires a "window size" parameter, which is the number of messages to sample from.
-* Like all CLI commands close it with `CTRL-C`
+* The ``topic bw``, or bandwidth command, is used to measure the amount of bandwidth, or network capacity, that a topic uses. It requires a "window size" parameter, which is the number of messages to sample from.
+* Like all CLI commands close it with ``CTRL+C``
 
  
 ::
@@ -401,8 +400,8 @@ Our Turtle simulation is pretty simple and doesn't generate a lot of data. Camer
    average: 1.51KB/s
         mean: 0.02KB min: 0.02KB max: 0.02KB window: 100
 
-* The topic hz command, or hertz command, is used to measure how frequently a given topic publishes. Frequencies are usually measured in a unit of Hertz, or cycles per second.
-* The hz command will publish the low, high, average, and standard deviation of the message publishing frequency.
+* The ``topic hz`` command, or hertz command, is used to measure how frequently a given topic publishes. Frequencies are usually measured in a unit of Hertz, or cycles per second.
+* The ``hz`` command will publish the low, high, average, and standard deviation of the message publishing frequency.
 
 ::
 
@@ -415,10 +414,11 @@ Our Turtle simulation is pretty simple and doesn't generate a lot of data. Camer
 ----
 
 ====
-Topic Info 
+Topic info 
 ====
 
-Another helpful command for inspecting a topic is the info command. The info command lists the number of publishers subscribers
+Another helpful command for inspecting a topic is the ``info`` command. 
+The ``info`` command lists the number of publishers and subscribers
 
 Let's take a quick look:
 
@@ -429,7 +429,12 @@ Let's take a quick look:
    Publisher count: 1
    Subscriber count: 1
 
-Another related tool for looking at topics is the `msg show` command. ROS topics use standard messaging formats. If you would like to know the types and format of a message this command will do that. Below is an example for the TurtleSim. Be aware that this tool uses tab completion. If you know don't know where or what you are looking for it can help!
+Another related tool for looking at topics is the ``msg show`` command. 
+ROS topics use standard messaging formats. 
+If you would like to know the types and format of a message this command will do that. 
+Below is an example for TurtleSim. 
+Be aware that this tool uses tab completion. 
+If you know don't know where or what you are looking for it can help!
 
 ::
 
@@ -446,16 +451,16 @@ Another related tool for looking at topics is the `msg show` command. ROS topics
 ----
 
 ====
-Publishing a Message the Hard Way
+Publishing a message the hard way
 ====
 
 * Sometimes when you are debugging and testing you need to send a message manually. 
-* The command is `ros2 topic pub`
-* The format is as follows: `ros2 topic pub <topic_name> <msg_type> <args>`
+* The command is ``ros2 topic pub``
+* The format is as follows: ``ros2 topic pub <topic_name> <msg_type> <args>``
 * This command is difficult to get right as you have to write the message in YAML format.
-* The `ros2 msg show` command will help with this.
+* The ``ros2 msg show`` command will help with this.
 
-**To run this command you'll need to stop the draw square node. Use F2/F3 to change to the correct screen and then enter `CTRL-C`**
+**To run this command you'll need to stop the draw square node. Use F2/F3 to change to the correct screen and then enter CTRL+C**
 
 ::
 
@@ -465,21 +470,26 @@ Publishing a Message the Hard Way
    publishing #1: geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0),
    angular=geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))
 
-This command has a lot options that are super helpful for debugging. You can set QoS parameters for the messages, mock the sending node, and modify the publishing rate.
+This command has a lot options that are super helpful for debugging. 
+You can set QoS parameters for the messages, mock the sending node, and modify the publishing rate.
 
 ----
 
 ====
-But There is Also a GUI Tool! 
+But there is also a GUI tool! 
 ====
 
-If the command line isn't your thing quite a few things can be accomplished via the `rqt_gui`. The rqt GUI can be started by running `rqt` in the command line. You'll want to restart the draw square node by running `ros2 run turtlesim draw_square` in the command line. You should be able to press the arrow up key to get the command back.
+If the command line isn't your thing quite a few things can be accomplished via the ``rqt_gui``. 
+The rqt GUI can be started by running ``rqt`` in the command line. 
+You'll want to restart the draw square node by running ``ros2 run turtlesim draw_square`` in the command line. 
+You should be able to press the arrow up key to get the command back.
 
 .. image:: ./images/rqt_start.png
 	   :width: 200
 
 
-RQT starts off blank, so we'll have to turn on the topic tab by clicking `Plugins=>Topics=>Topic Monitor`. Once you do that you should see something like what's below. You may need to resize the window. 
+RQT starts off blank, so we'll have to turn on the topic tab by clicking ``Plugins=>Topics=>Topic Monitor``. 
+Once you do that you should see something like what's below. You may need to resize the window. 
 
 .. image:: ./images/rqt.png
 	   :width: 400
@@ -488,12 +498,15 @@ RQT starts off blank, so we'll have to turn on the topic tab by clicking `Plugin
 ----
 
 ====
-ROS Parameters
+ROS parameters
 ====
 
 `The full ROS Param tutorial can be found here. <https://index.ros.org/doc/ros2/Tutorials/Parameters/Understanding-ROS2-Parameters/>`_
 
-In ROS, parameters are values that are shared between nodes in the system. If you are familiar with the `blackboard design pattern <https://en.wikipedia.org/wiki/Blackboard_(design_pattern)>`_ in software engineering. Parameters are values that any node can query or write to, another good analogy would be global constants in normal software programs. Parameters are best used to configure your robot. For example, if you were building an autonomous vehicle and wanted to cap the maximum velocity of the vehicle at 100 km/h, you could create a parameter called "MAX_SPEED" that is visible to all teh nodes.
+In ROS, parameters are values that are shared between nodes in the system (if you are familiar with the `blackboard design pattern <https://en.wikipedia.org/wiki/Blackboard_(design_pattern)>`_ in software engineering). 
+Parameters are values that any node can query or write to, another good analogy would be global constants in normal software programs. 
+Parameters are best used to configure your robot. 
+For example, if you were building an autonomous vehicle and wanted to cap the maximum velocity of the vehicle at 100 km/h, you could create a parameter called "MAX_SPEED" that is visible to all the nodes.
 
 Let's take a look at the high level param program.
 
@@ -512,10 +525,10 @@ Let's take a look at the high level param program.
 ----
 
 ====
-Params Used By Turtle Sim
+Params used by TurtleSim
 ====
 
-Let's see what what the docs say and then see what happens when we call `ros2 param list`
+Let's see what the docs say and then see what happens when we call ``ros2 param list``
 
 ::
 
@@ -545,12 +558,12 @@ Let's see what what the docs say and then see what happens when we call `ros2 pa
 ----
 
 ====
-Let's Try Getting/Setting Parameters 
+Let's try getting/setting parameters 
 ====
 
 The syntax for getting a parameter is as follows:
 
-`ros2 param get <node name> <param name>`
+``ros2 param get <node name> <param name>``
 
 Let's give it a shot.
 
@@ -561,7 +574,7 @@ Let's give it a shot.
 
 Let's try setting a parameter. The syntax for that is as follows:
 
-`ros2 set <node name> <param name> <value>`
+``ros2 set <node name> <param name> <value>``
 
 ::
    
@@ -578,12 +591,20 @@ Services
 
 * The full ROS 2 Services tutorials `can be found here. <https://index.ros.org/doc/ros2/Tutorials/Services/Understanding-ROS2-Services/>`_
 
-ROS2 Services, as we have discussed previously, are another level of extraction built on top of ROS 2 topics. At its core, a service is just an API for controlling a robot task.  A good analogy for ROS Services are  `remote procedure calls <https://en.wikipedia.org/wiki/Remote_procedure_call>`_ . Another good analogy for services would be making an REST API call. Curling a remote REST API endpoint to query data on a remote server is very similar to a ROS service. Essentially the ROS API allows every node to publish a list of services, and subscribe to  services from other nodes.
+ROS2 Services, as we have discussed previously, are another level of extraction built on top of ROS 2 topics. 
+At its core, a service is just an API for controlling a robot task.  
+A good analogy for ROS Services are  `remote procedure calls <https://en.wikipedia.org/wiki/Remote_procedure_call>`_ . 
+Another good analogy for services would be making an REST API call. 
+Curling a remote REST API endpoint to query data on a remote server is very similar to a ROS service.
+Essentially the ROS API allows every node to publish a list of services, and subscribe to  services from other nodes.
 
 
-The root command for ROS services is the `ros2 service` command. Just like all the other commands we have looked at, let's run `ros2 service --help` to see what we can do.
+The root command for ROS services is the ``ros2 service`` command. 
+Just like all the other commands we have looked at, let's run ``ros2 service --help`` to see what we can do.
 
-**An important distinction is between `ros2 srv` and `ros2 service`. The former is for installed services while the latter is for running services. We'll focus on the latter, but `srv` is very similar.**
+**There is an important distinction between ros2 srv and ros2 service.** 
+**The former is for installed services while the latter is for running services. 
+We'll focus on the latter, but ``srv`` is very similar.
 
 ::
 
@@ -595,15 +616,15 @@ The root command for ROS services is the `ros2 service` command. Just like all t
      call  Call a service
      list  Output a list of available services
 
-* Services look fairly straight forward, with only two commands, `list` and `call`.
+* Services look fairly straight forward, with only two commands, ``list`` and ``call``.
 
 ----
 
 ====
-Listing Available Services 
+Listing available services 
 ====
 
-Let's take a look at what we can do with `ros2 service list`.
+Let's take a look at what we can do with ``ros2 service list``.
 
 ::
 
@@ -618,7 +639,7 @@ Let's take a look at what we can do with `ros2 service list`.
       -c, --count-services  Only display the number of services discovered
 
 
-This command is fairly straight forward with only two utility flags. Let's use the `-t` flag
+This command is fairly straight forward with only two utility flags. Let's use the ``-t`` flag
 
 ::
 
@@ -647,10 +668,10 @@ This command is fairly straight forward with only two utility flags. Let's use t
 ----
 
 ====
-Calling a ROS 2 Service
+Calling a ROS 2 service
 ====
 
-Let's explore the `ros2 service call` command.
+Let's explore the ``ros2 service call`` command.
 
 
 ::
@@ -671,23 +692,23 @@ Let's explore the `ros2 service call` command.
 
 The format is pretty straight forward:
 
-`ros2 service call <service_name> <service_type> [values]`
+``ros2 service call <service_name> <service_type> [values]``
 
 ----
 
 ====
-Basic Example, Blank Services. 
+Basic example, blank services. 
 ====
 
-* If we look at the list of services we see a `/reset/` service that has the type `[std_srvs/srv/Empty]`.
+* If we look at the list of services we see a ``/reset/`` service that has the type ``[std_srvs/srv/Empty]``.
 * What this means is that this service can be called with an empty message.
 * It is worth noting that a empty message still has a type, it is just that the type is empty.
-* Our turtle has been draw a box for a while, why don't we see if we can reset the screen?
+* Our turtle has been drawing a box for a while, why don't we see if we can reset the screen?
 
-  * First kill the draw_square node. Use `F3` to go to the right window.
-  * Now use `CTRL-C` to stop the program. 
+  * First kill the draw_square node. Use ``F3`` to go to the right window.
+  * Now use ``CTRL+C`` to stop the program. 
 
-Why don't we give it a call. The empty service message can be found in `std_srvs/srv/Empty`, thus our call is as follows:
+Why don't we give it a call. The empty service message can be found in ``std_srvs/srv/Empty``, thus our call is as follows:
 
 ::
 
@@ -702,7 +723,7 @@ Why don't we give it a call. The empty service message can be found in `std_srvs
 ----
 
 ====
-Service Call Result
+Service call result
 ====
 
 
@@ -711,21 +732,22 @@ Service Call Result
 
 **The service reset the screen, and changed our turtle icon!**
 
-*Try toggling the `draw_square` program and the `reset` service a few times.*
+Try toggling the ``draw_square`` program and the ``reset`` service a few times.
 
 ----
 
 ====
-More Complex Service Calls
+More complex service calls
 ====
 
-Next we're going to try a more complex service call that requires an actual message. For this example we'll use the spawn service that creates a new turtle.
+Next we're going to try a more complex service call that requires an actual message. 
+For this example we'll use the spawn service that creates a new turtle.
 
-The spawn service, looking at our `ros2 service list` call uses a `[turtlesim/srv/Spawn]` message.
+The spawn service, looking at our ``ros2 service list`` call uses a ``[turtlesim/srv/Spawn]`` message.
 
-The best way to determine the name of a service is to use the `srv` verb in ROS 2.
+The best way to determine the name of a service is to use the ``srv`` verb in ROS 2.
 
-The way we do this is running `ros2 srv show turtlesim/srv/Spawn`.
+The way we do this is running ``ros2 srv show turtlesim/srv/Spawn``.
 
 ::
 
@@ -737,17 +759,19 @@ The way we do this is running `ros2 srv show turtlesim/srv/Spawn`.
    ---
    string 
 
-We can see now that this message takes an x,y position, an angle theta, and an optional name. The service will return a string (as noted by the string below the `---`)
+We can see now that this message takes an x,y position, an angle theta, and an optional name. 
+The service will return a string (as noted by the string below the ``---``)
 
 
 ----
 
 ====
-Services with Complex Messages
+Services with complex messages
 ====
 
 
-The format of the message is YAML inside quotation marks. Following from the information above let's make a few turtles.
+The format of the message is YAML inside quotation marks. 
+Following from the information above let's make a few turtles.
 
 ::
 
@@ -777,7 +801,7 @@ The format of the message is YAML inside quotation marks. Following from the inf
 ----
 
 ====
-Service Call Results!
+Service call results!
 ====
 
 **If everything went well we should see something like this.**
@@ -792,7 +816,7 @@ Service Call Results!
 ----
 
 ====
-ROS Action CLI
+ROS action CLI
 ====
 
 ROS Actions and Services are very similar in terms of what they do and likewise their APIs are also fairly similar. 
@@ -821,10 +845,10 @@ The other big difference between actions and services, is that actions can send 
 ----
 
 ====
-Actions: List & Info  
+Actions: list & info  
 ====
 
-Let's see what actions are availabe to us using `ros2 action list`
+Let's see what actions are availabe to us using ``ros2 action list``	
 
 ::
 
@@ -834,7 +858,9 @@ Let's see what actions are availabe to us using `ros2 action list`
    /moe/rotate_absolute
    /turtle1/rotate_absolute
 
-We see each of our turtles have one service called `rotate_absolute`. Let's dig into this action using the info verb. This command has a `-t` flag to list the types of messages.
+We see each of our turtles have one service called ``rotate_absolute``. 
+Let's dig into this action using the info verb. 
+This command has a ``-t`` flag to list the types of messages.
 
 ::
    
@@ -844,15 +870,19 @@ We see each of our turtles have one service called `rotate_absolute`. Let's dig 
    Action servers: 1
      /turtlesim [turtlesim/action/RotateAbsolute]
 
-Interesting, what do these terms mean. The first line lists the action name. The second line gives the current number of clients for the action. The `Action servers` line gives the total number of action servers for this action. The last line gives the package and message type for the action.
+Interesting, what do these terms mean. 
+The first line lists the action name. 
+The second line gives the current number of clients for the action. 
+The ``Action servers`` line gives the total number of action servers for this action. 
+The last line gives the package and message type for the action.
 
 ----
 
 ====
-Calling an Action and Giving it a Goal 
+Calling an action and giving it a goal 
 ====
 
-Let's take a look at the `ros2 action send_goal` command help.
+Let's take a look at the ``ros2 action send_goal`` help command.
 
 ::
    
@@ -868,7 +898,8 @@ Let's take a look at the `ros2 action send_goal` command help.
    optional arguments:
      -f, --feedback  Echo feedback messages for the goal
 
-We can see here that we need to know the action name, the type, and the values. Now the only problem is figuring out the format of the action_type.     
+We can see here that we need to know the action name, the type, and the values. 
+Now the only problem is figuring out the format of the action_type.     
 
 
 ----
@@ -877,7 +908,8 @@ We can see here that we need to know the action name, the type, and the values. 
 Let's understand the RotateAbsolute action message 
 ====
 
-The `ros2 action show` command can be used to find the type of action message. Let's take a look. 
+The ``ros2 action show`` command can be used to find the type of action message. 
+Let's take a look. 
 
 ::
 
@@ -894,17 +926,18 @@ The `ros2 action show` command can be used to find the type of action message. L
 
 What does this say about rotate absolute?
 
-* There is a float input, `theta` the desired heading. This first section is the actual goal. 
-* `delta` --  the angle from the initial heading. This is the value returned when the action completes. 
-* `remaining` -- the remaining radians to move. This is the value posted by the action while the action is being done. 
+* There is a float input, ``theta`` the desired heading. This first section is the actual goal. 
+* ``delta`` --  the angle from the initial heading. This is the value returned when the action completes. 
+* ``remaining`` -- the remaining radians to move. This is the value posted by the action while the action is being done. 
 
 ----
 
 ====
-Executing the Action 
+Executing the action 
 ====
 
-With this information we can create our call to the action server. We'll use the `-f` flag to make this a big clearer.
+With this information we can create our call to the action server. 
+We'll use the ``-f`` flag to make this a bit clearer.
 
 **Keep an eye on your turtle! It should move, slowly.**
 
@@ -947,7 +980,7 @@ ROS Bag!
 * ROS systems can generate a lot of data, so you select which topics you want to bag.
 * Bags are a great tool for testing and debugging your application as well.
 
-Let's take a look at the base `bag` verb.
+Let's take a look at the base ``bag`` verb.
 
 ::
 
@@ -964,14 +997,15 @@ Let's take a look at the base `bag` verb.
 ----
 
 ====
-Let's Try Recording our First Bag
+Let's try recording our first Bag
 ====
 
-First use `F2` or `F3` to go to the other terminal. Start the draw square demo again to get the default turtle movign.
+First use ``F2`` or ``F3`` to go to the other terminal. 
+Start the ``draw_square`` demo again to get the default turtle moving.
 
-The command for that is: `ros2 run turtlesim draw_square`
+The command for that is: ``ros2 run turtlesim draw_square``
 
-Now let's look at `ros2 bag -h`
+Now let's look at ``ros2 bag -h``
 
 ::
 
@@ -999,11 +1033,12 @@ Now let's look at `ros2 bag -h`
 Let's Bag!
 ====
 
-* Let's bag the pose data on the `/turtle1/pose topic`
-* Save the data to the directory `turtle1.bag` using the `-o` flag.
-* The program will bag until you hit `CTRL-C`. Give it a good 30 seconds. 
+* Let's bag the pose data on the ``/turtle1/pose topic``
+* Save the data to the directory ``turtle1.bag`` using the ``-o`` flag.
+* The program will bag until you hit ``CTRL+C``. Give it a good 30 seconds. 
   
 Here's my example. 
+
 ::
 
    kscottz@ade:~$ ros2 bag record /turtle1/pose -o turtle1
@@ -1016,10 +1051,11 @@ Here's my example.
 ----
 
 ====
-Let's inspect our bag. 
+Let's inspect our Bag. 
 ====
 
-You can introspect any bag file using the `ros2 bag info command`. This command will list the messages in the bag, the duration of file, and the number of messages. 
+You can introspect any bag file using the ``ros2 bag info`` command. 
+This command will list the messages in the bag, the duration of file, and the number of messages. 
 
 ::
 
@@ -1039,9 +1075,11 @@ You can introspect any bag file using the `ros2 bag info command`. This command 
 Replaying a Bag
 ====
 
-Bags are a great tool for debugging and testing. You can treat a ROS bag like a recording of a running ROS system. When you play a bag file you can use most of the ros 2 cli tools inspect the recorded topics.
+Bags are a great tool for debugging and testing. 
+You can treat a ROS bag like a recording of a running ROS system. 
+When you play a bag file you can use most of the ros2 cli tools to inspect the recorded topics.
 
-To replay the bag, first use `F2/F3` and `Ctrl-C` to turn off the main turtle node and the draw_square node.
+To replay the bag, first use ``F2/F3`` and ``CTRL+C`` to turn off the main turtle node and the ``draw_square`` node.
 
 Now in a new terminal replay the bag file using the following command:
 
@@ -1050,7 +1088,9 @@ Now in a new terminal replay the bag file using the following command:
    kscottz@ade:~$ ros2 bag play turtle1
    [INFO] [rosbag2_storage]: Opened database 'turtle1'.
 
-Nothing should happen visibly, but a lot is happening under the hood. Use `F2` or `F3` to go to a second terminal. Just like a running robot, you should be able `list` and `echo` topics.
+Nothing should happen visibly, but a lot is happening under the hood. 
+Use ``F2`` or ``F3`` to go to a second terminal. 
+Just like a running robot, you should be able ``list`` and ``echo`` topics.
 
 ::
 
@@ -1069,7 +1109,7 @@ Nothing should happen visibly, but a lot is happening under the hood. Use `F2` o
 
 Pretty cool right?
 
-You can kill the bag file with `CTRL-C`.
+You can kill the bag file with ``CTRL+C``.
 
 ----
 
