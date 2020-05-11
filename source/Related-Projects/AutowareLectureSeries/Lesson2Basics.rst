@@ -685,14 +685,14 @@ Using a Service in Code
 ====
 
 We just called our service from the command line to test it, but more often than not we would want to do this in source code.
-
+ 
 Let's look at an example of how to do that. In your editor or using less take a look at the following file: `/home/kscottz/ros2_example_ws/src/examples/rclcpp/minimal_client/main.cpp` 
 
 .. code-block:: C++
    :linenos:
       
    // snipped 
-   #include "example_interfaces/srv/add_two_ints.hpp" #include the service header file. 
+   #include "example_interfaces/srv/add_two_ints.hpp" // include the service header file. 
    #include "rclcpp/rclcpp.hpp"
    // Scope resolution on underlying call signature. 
    using AddTwoInts = example_interfaces::srv::AddTwoInts;
@@ -717,26 +717,591 @@ Let's look at an example of how to do that. In your editor or using less take a 
 C++ Service Client Part Deux 
 ====
       
+.. code-block:: C++
+   :linenos:
+
+   //... snip    
+   auto request = std::make_shared<AddTwoInts::Request>(); // shared memory to request 
+   request->a = 41;  // set the input values
+   request->b = 1;   // set the input values
+   auto result_future = client->async_send_request(request); // Send the request
+   if (rclcpp::spin_until_future_complete(node, result_future) != // spin until result
+      rclcpp::executor::FutureReturnCode::SUCCESS)
+   {
+      RCLCPP_ERROR(node->get_logger(), "service call failed :("); 
+      return 1;
+   }
+   auto result = result_future.get(); // Get the result 
+   RCLCPP_INFO(node->get_logger(), "result of %" PRId64 " + %" PRId64 " = %" PRId64,
+      request->a, request->b, result->sum); // print the result
+  rclcpp::shutdown(); // shutdown 
+  return 0;
+  }
+
+----
+  
+====
+Let's Run Our Client 
+====
+
+* Now we're going to run our service and then call it from the client.
+* You'll need two terminals to do this. Remember `F2/F3` let you open and switch to a new terminal in ADE.
+
+First fire up your service if it isn't already running.
+
+.. code-block:: bash
+		
+   $ ros2 run examples_rclpy_minimal_service service
+
+Now start the client in a second terminal. 
+
+.. code-block:: bash
+		
+   $ ros2 run examples_rclpy_minimal_client client
+   [INFO] [minimal_client]: Result of add_two_ints: for 41 + 1 = 42
+
+The client should fire off a request right away. You can see the result.
+
+Finally, toggle back to the service.
+
+.. code-block:: bash
+   
+   $ ~/ros2_example_ws$ ros2 run examples_rclpy_minimal_service service
+   [INFO] [minimal_service]: Incoming request
+   a: 41 b: 1
+
+
+You can see the debug input  has been printed to the terminal.
+
+----
+
+====
+ROS C++ Actions
+====
+
+* Actions are ROS / ROS 2's answers to asynchronus remote procedure calls.
+* Notice how quickly how fast our service call happened. It was more or less instant.
+* Actions are the preffered approach for things that may not happen instantaneously.
+* The cannonical example of a ROS Action would be sending the robot a command to navigate to a waypoint.
+* The process of navigation is going to take a bit of time, what we want to do is to kick off the process, wait for updates, and then once things are complete we get a result. 
+* Just like services there are two parts of an action. The action server and the action client. *Note that there can be more than one client.*
+* Actions become fairly complex as they can serve multiple clients. This means the action may need to keep track of multiple concurrent connections.
+
+  * Since action servers  can get overwhelmed by requests, they need to *accept* every request before proceeding to process it.  
+  * The clients can also *cancel* at any time, so that needs to be handled. 
+  
+
+----
+
+====
+Fibbonaci Action
+====
+
+For our action server we're going to create a toy example, this example will calculate the `Nth number` in the `Fibonacci series <https://en.wikipedia.org/wiki/Fibonacci_number>`_. So, what will happen when we call this toy action?
+
+* We will call the action with a single integer indicating the `sequence number` of the Fibonacci number we want.
+* The action will update us as it calculates the sequence of numbers and update it us as it calculates a new one.
+* When the action gets to our desired number in the sequence, it will return the results.
+* For example, if we called action with the input 7, we would get the seventh Fibonacci number. Which means, given the series  <0, 1, 1, 2, 3, 5, 8>, would be the number 8.
+* The action should update us along the way in the calculation. It should return the series of numbers every time it calculates a new number.
+
+----
+
+====
+Action Definition Files
+====
+
+* Actions use a definition file to build all of the ROS boiler plate like cross language header/definition files for use in multiple programming languages.
+
+* These action files are written in YAML and use the `*.action` suffix. 
+
+* The ROS meta build system colcon will use these action files to automagically generate all of the header files.
+
+
+Let's take a look at an action file.
+
+.. code-block:: bash
+		
+   /opt/ros/dashing/share/example_interfaces/action/Fibonacci.action
+   # Goal -- the input, the order we want like 7
+   int32 order 
+   ---
+   # Result -- the *final result*, here the list of values 0,1,1,2,3,5,8....
+   int32[] sequence
+   ---
+   # Feedback -- the *intermediate result* so <0>,<0,1>,<0,1,1>,<0,1,1,2> ...
+   int32[] sequence
+   Fibonacci.action (END)
+
+----
+
+====
+Really quick, let's look under the hood!
+====
+
+As we said previously, the `*.action` is used to autogenerate a bunch of other files. We can see this if we go down one directory to msg.
+
+What we'll see is that the `*.action` file is used to generate a bunch of ROS topic messages mapping to states in our action.
+
+Essentially a ROS action is built upon ROS nodes and ROS topics
+
+.. code-block:: bash
+		
+   kscottz@ade:/opt/ros/dashing/share/example_interfaces/action/msg$ cd ~/
+   kscottz@ade:~$ cd /opt/ros/dashing/share/example_interfaces/action/msg/
+   kscottz@ade:/opt/ros/dashing/share/example_interfaces/action/msg$ ls
+   FibonacciActionFeedback.msg  FibonacciAction.msg        FibonacciFeedback.msg  FibonacciResult.msg
+   FibonacciActionGoal.msg      FibonacciActionResult.msg  FibonacciGoal.msg
+   kscottz@ade:/opt/ros/dashing/share/example_interfaces/action/msg$ less FibonacciActionGoal.msg
+   # This file is automatically generated by rosidl-generator
+   std_msgs/Header header
+   actionlib_msgs/GoalID goal_id
+   FibonacciGoal goal
+   FibonacciActionGoal.msg (END)
+   kscottz@ade:/opt/ros/dashing/share/example_interfaces/action/msg$ cd ~
+
+----
+
+====
+Let's take a look at Action Server
+====
+
+* Let's take a look at how our Fibonacci action server.
+* Use your favorite text editor to open: `/home/kscottz/ros2_example_ws/src/examples/rclcpp/minimal_action_server/member_functions.cpp`
+  
+.. code-block:: C++
+   :linenos:
+
+   #include <inttypes.h>
+   #include <memory>
+   #include "example_interfaces/action/fibonacci.hpp" // Our autogen header/ 
+   #include "rclcpp/rclcpp.hpp"
+   #include "rclcpp_action/rclcpp_action.hpp"
+   
+   class MinimalActionServer : public rclcpp::Node
+   {
+   public:  // Pre-defined interface files. 
+      using Fibonacci = example_interfaces::action::Fibonacci;
+      using GoalHandleFibonacci = rclcpp_action::ServerGoalHandle<Fibonacci>;
+      
+      explicit MinimalActionServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
+      : Node("minimal_action_server", options)
+      {
+        using namespace std::placeholders;
+	// SCARY call to define that this is a Fib. action and what functions
+	// attach to what events in the action lifecycle. 
+	this->action_server_ = rclcpp_action::create_server<Fibonacci>(
+	this->get_node_base_interface(),      // The action server is basically
+	this->get_node_clock_interface(),     // a node and we need return pointers
+	this->get_node_logging_interface(),   // to all of standard interaces. 
+	this->get_node_waitables_interface(),
+	"fibonacci",  // and bind our member functions to topic events. 
+ 	std::bind(&MinimalActionServer::handle_goal, this, _1, _2), 
+	std::bind(&MinimalActionServer::handle_cancel, this, _1),
+	std::bind(&MinimalActionServer::handle_accepted, this, _1));
+      }
+
+----
+
+====
+Actions: Accept or Cancel
+====
+
+Let's deal with accepting a goal, or canceling a goal. 
 
 .. code-block:: C++
    :linenos:
-   //... snip    
-   auto request = std::make_shared<AddTwoInts::Request>();
-   request->a = 41;
-   request->b = 1;
-   auto result_future = client->async_send_request(request);
-   if (rclcpp::spin_until_future_complete(node, result_future) !=
-      rclcpp::executor::FutureReturnCode::SUCCESS)
-   {
-      RCLCPP_ERROR(node->get_logger(), "service call failed :(");
-      return 1;
+
+   private:
+     rclcpp_action::Server<Fibonacci>::SharedPtr action_server_;
+
+     rclcpp_action::GoalResponse handle_goal(
+      const rclcpp_action::GoalUUID & uuid, // Each request gets a UUID 
+      std::shared_ptr<const Fibonacci::Goal> goal) // The goal object
+     {
+        RCLCPP_INFO(this->get_logger(), "Received goal request with order %d", goal->order);
+	(void)uuid;
+	// Let's reject sequences that are over 9000
+	if (goal->order > 9000) {
+	  return rclcpp_action::GoalResponse::REJECT;
+	  } // respond with "yes, we'll process this request. 
+      return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
    }
-   auto result = result_future.get();
-   RCLCPP_INFO(node->get_logger(), "result of %" PRId64 " + %" PRId64 " = %" PRId64,
-      request->a, request->b, result->sum);
-  rclcpp::shutdown();
-  return 0;
+
+   rclcpp_action::CancelResponse handle_cancel(
+      const std::shared_ptr<GoalHandleFibonacci> goal_handle)
+   {
+      RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+      (void)goal_handle;
+      return rclcpp_action::CancelResponse::ACCEPT;
+   }
+
+
+----
+
+====
+The Meat of the Fib Function
+====
+
+.. code-block:: C++
+   :linenos:
+
+   void execute(const std::shared_ptr<GoalHandleFibonacci> goal_handle)
+   { // This is the meaty part of the function 
+      RCLCPP_INFO(this->get_logger(), "Executing goal");
+      rclcpp::Rate loop_rate(1);
+      const auto goal = goal_handle->get_goal(); // this is our goal value
+      auto feedback = std::make_shared<Fibonacci::Feedback>(); // this is our feedback object
+      auto & sequence = feedback->sequence; // this is our list of fib values. 
+      sequence.push_back(0);
+      sequence.push_back(1);
+      auto result = std::make_shared<Fibonacci::Result>(); // This is the final result. 
+
+      // Do fib as long as ROS is ok!
+      for (int i = 1; (i < goal->order) && rclcpp::ok(); ++i) {
+      // Check if there is a cancel request
+      if (goal_handle->is_canceling()) { // Handle a cancel result!
+        result->sequence = sequence;
+        goal_handle->canceled(result);
+        RCLCPP_INFO(this->get_logger(), "Goal Canceled");
+        return;
+      }
+      // Update sequence
+      sequence.push_back(sequence[i] + sequence[i - 1]);
+      // Publish feedback
+      goal_handle->publish_feedback(feedback);
+      RCLCPP_INFO(this->get_logger(), "Publish Feedback");
+
+      loop_rate.sleep();
+      }
+
+    // Check if goal is done
+    if (rclcpp::ok()) {
+      result->sequence = sequence;
+      goal_handle->succeed(result);
+      RCLCPP_INFO(this->get_logger(), "Goal Succeeded");
+    }
   }
- 
+
+  void handle_accepted(const std::shared_ptr<GoalHandleFibonacci> goal_handle)
+  { // Our request was accepted, fire off a new thread. 
+    using namespace std::placeholders;
+    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+    std::thread{std::bind(&MinimalActionServer::execute, this, _1), goal_handle}.detach();
+  }
+
+====
+Finally, Let's Put our Class into an Executable
+====
+
+.. code-block:: C++
+   :linenos:
+
+   int main(int argc, char ** argv)
+   {
+      rclcpp::init(argc, argv);
+
+      auto action_server = std::make_shared<MinimalActionServer>();
+
+      rclcpp::spin(action_server);
+
+      rclcpp::shutdown();
+      return 0;
+   }
+
+----
+
+====
+Let's Run Our Action and Call It. 
+====
+
+* Ordinarily you would call `colcon build` in your workspace to build the source code. We're just inspecting this method so this isn't necessary.
+
+* We'll start the action server and then call it manually using the ROS 2 CLI.
+
+.. code-block:: bash
+
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclpy_minimal_action_server server
 
 
+Now we're going to manually call the server from the ROS 2 CLI. We'll cover this in more depth in the next lesson. If you're using byobu use `F3` to go to a second terminal or `F2` to make a new one.
+
+
+.. code-block:: bash
+		
+   $ ros2 action send_goal /fibonacci example_interfaces/action/Fibonacci '{order: 10}'
+   Waiting for an action server to become available...
+   Sending goal:
+      order: 10
+
+   Goal accepted with ID: 0c1b3779c7ea44b69d54c6e1cfac3ff6
+
+   Result:
+      sequence: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+
+   Goal finished with status: SUCCEEDED
+
+You can use `F3` to see what happened to our action and its status updates.
+
+.. code-block:: bash
+
+   [INFO] [minimal_action_server]: Received goal request
+   [INFO] [minimal_action_server]: Executing goal...
+   [INFO] [minimal_action_server]: Publishing feedback: array('i', [0, 1, 1])
+   [INFO] [minimal_action_server]: Publishing feedback: array('i', [0, 1, 1, 2])
+   [INFO] [minimal_action_server]: Publishing feedback: array('i', [0, 1, 1, 2, 3])
+   [INFO] [minimal_action_server]: Publishing feedback: array('i', [0, 1, 1, 2, 3, 5])
+   ... SNIP ... 
+   [INFO] [minimal_action_server]: Returning result: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+
+----
+
+====
+Action Client
+====
+
+* Let's take at the client side API implementation. Open the file:
+
+  `~/ros2_example_ws/src/examples/rclcpp/minimal_action_client/member_functions.cpp`
+
+* We'll address the basic implementation but that directory has additional examples for other use cases and things like canceling an action mid-process.
+
+* It is worth understanding what we're doing, it is more than sending just the goal. Roughly this classs does the following:
+
+  * Check's for a connection to ROS, and the action server.
+  * Sends the goal.
+  * Checks that the goal was "accepted" after sending.
+  * Updates the log/screen as interim feedback gets sent.
+  * Recieves the final results. 
+
+----
+
+====
+Let's Create A Client Class
+====
+    
+.. code-block:: C++
+   :linenos:
+
+   #include "example_interfaces/action/fibonacci.hpp"
+   #include "rclcpp/rclcpp.hpp"
+   #include "rclcpp_action/rclcpp_action.hpp"
+
+   class MinimalActionClient : public rclcpp::Node
+   {
+      public: // looks familiar, pulling in the action interface, and the goal type
+      using Fibonacci = example_interfaces::action::Fibonacci;
+      using GoalHandleFibonacci = rclcpp_action::ClientGoalHandle<Fibonacci>;
+
+      explicit MinimalActionClient(const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions())
+      : Node("minimal_action_client", node_options), goal_done_(false)
+      {  // Create a client interface. 
+         this->client_ptr_ = rclcpp_action::create_client<Fibonacci>(
+	 this->get_node_base_interface(),
+	 this->get_node_graph_interface(),
+	 this->get_node_logging_interface(),
+	 this->get_node_waitables_interface(),
+	 "fibonacci");
+	 // Create a time and have callback to send goal in 500ms
+	 this->timer_ = this->create_wall_timer(
+	 std::chrono::milliseconds(500),
+	 std::bind(&MinimalActionClient::send_goal, this));
+      }
+----
+
+====
+Sending the Goal 
+====
+
+* Our client constructor above set a time to call `send_goal` after 500ms. We'll bind our member functions to the action events and then send the goals. 
+
+  
+.. code-block:: C++
+   :linenos:
+      
+      // method to check if goal is done
+      bool is_goal_done() const
+      {
+         return this->goal_done_;
+      }
+      
+      void send_goal()
+      {  
+         using namespace std::placeholders;
+	 this->timer_->cancel();
+	 this->goal_done_ = false;
+	 // fail to connect to logger.
+	 if (!this->client_ptr_) {
+	    RCLCPP_ERROR(this->get_logger(), "Action client not initialized");
+	 }
+	 // fail to find the server
+	 if (!this->client_ptr_->wait_for_action_server(std::chrono::seconds(10))) {
+	     RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
+	     this->goal_done_ = true;
+	 return;
+	 }
+	 // create the goal msg type and set  
+	 auto goal_msg = Fibonacci::Goal();
+	 goal_msg.order = 10;
+	 RCLCPP_INFO(this->get_logger(), "Sending goal");
+
+	 auto send_goal_options = rclcpp_action::Client<Fibonacci>::SendGoalOptions();
+	 // response callback (success/failure)
+	 send_goal_options.goal_response_callback =
+	 std::bind(&MinimalActionClient::goal_response_callback, this, _1);
+	 // server feedback callback
+	 send_goal_options.feedback_callback =
+	 std::bind(&MinimalActionClient::feedback_callback, this, _1, _2);
+	 // result callback bind 
+	 send_goal_options.result_callback =
+	 std::bind(&MinimalActionClient::result_callback, this, _1);
+	 auto goal_handle_future = this->client_ptr_->async_send_goal(goal_msg, send_goal_options);
+      }
+   
+
+----
+
+====
+Handling the Responses 
+====
+
+Next up we create our private member variables and define the functions that get called with the goal response and the periodic feedback. 
+
+.. code-block:: C++
+   :linenos:
+   
+   private:
+      rclcpp_action::Client<Fibonacci>::SharedPtr client_ptr_;
+      rclcpp::TimerBase::SharedPtr timer_;
+      bool goal_done_;
+      // handle the response to our request 
+      void goal_response_callback(std::shared_future<GoalHandleFibonacci::SharedPtr> future)
+      {
+         auto goal_handle = future.get();
+	 if (!goal_handle) {
+	     RCLCPP_ERROR(this->get_logger(), "Goal was rejected by server");
+	 } else {
+	 RCLCPP_INFO(this->get_logger(), "Goal accepted by server, waiting for result");
+	 }
+      }
+
+      // handle the feedback calls, these should be the format of feedback. 
+      void feedack_callback(
+      GoalHandleFibonacci::SharedPtr,
+      const std::shared_ptr<const Fibonacci::Feedback> feedback)
+      {
+         RCLCPP_INFO(
+	 this->get_logger(),
+	 "Next number in sequence received: %" PRId64,
+	 feedback->sequence.back());
+      }
+
+
+----
+
+====
+Handling The Result 
+====
+
+.. code-block:: C++
+   :linenos:
+      
+   // handle result callback
+   void result_callback(const GoalHandleFibonacci::WrappedResult & result)
+   {
+      this->goal_done_ = true;
+      switch (result.code) {
+        case rclcpp_action::ResultCode::SUCCEEDED:
+          break;
+	case rclcpp_action::ResultCode::ABORTED:
+	  RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
+          return;
+	case rclcpp_action::ResultCode::CANCELED:
+           RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+           return;
+	default:
+          RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+          return;
+       }
+
+       RCLCPP_INFO(this->get_logger(), "Result received");
+       for (auto number : result.result->sequence) {
+         RCLCPP_INFO(this->get_logger(), "%" PRId64, number);
+       }
+     }
+   };  // class MinimalActionClient
+
+
+----
+
+====
+Running our Client Class
+====
+
+Finally the main function that attaches to our node class. It simply creates a class instance and runs until completion. 
+
+
+.. code-block:: C++
+   :linenos:
+      
+   int main(int argc, char ** argv)
+   {
+      rclcpp::init(argc, argv);
+      auto action_client = std::make_shared<MinimalActionClient>();
+
+      while (!action_client->is_goal_done()) {
+        rclcpp::spin_some(action_client);
+      }
+
+      rclcpp::shutdown();
+      return 0;
+   }
+
+
+----
+
+====
+Let's Run our Client
+====
+
+* We'll start the action server the same way as before 
+
+.. code-block:: bash
+
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclpy_minimal_action_server server
+
+
+Next we'll run our client. 
+
+.. code-block:: bash
+
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclpy_minimal_action_client client
+   [INFO] [minimal_action_client]: Waiting for action server...
+   [INFO] [minimal_action_client]: Sending goal request...
+   [INFO] [minimal_action_client]: Goal accepted :)
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3, 5])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3, 5, 8])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3, 5, 8, 13])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34])
+   [INFO] [minimal_action_client]: Received feedback: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+   [INFO] [minimal_action_client]: Goal succeeded! Result: array('i', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])
+
+----
+
+====
+Wrapping Up...
+====
+
+* We've just seen the set of API primitives upon which most ROS systems are made.
+* Generally speaking, when you build a robot you work from simple to complex. You build the nodes and topics first, then the services, and finally the actions.
+* While we addressed all of these topics with the C++ API there is an equivalent Python API that works similarly.
+* Moreover, there are additional API primitives that you can check out.
+* All of these examples are in the workspace that we created.
+* I would encourage you to modify these examples to build a better idea of how they work.
+
+
+**Next time we'll cover the ROs 2 API.**
