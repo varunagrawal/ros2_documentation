@@ -1,5 +1,5 @@
 ====
-Lesson 2: Introduction to ROS API and Build Tools
+Lesson 2: ROS API and Build Tools
 ====
 
 * This lesson is intended to be an hour long crash course in the ROS 2 Dashing API and build tools. * After this lesson you should be able to code and build a rudimentary ROS 2 application.
@@ -73,7 +73,7 @@ Other and/or Un-Official Resources
 ====
 
 * The ROS / Robotics Sub Reddits are Great!
-* There is an "un-official" `ROS Discord <https://discord.com/invite/HnVcz5a`>_.
+* There is an "un-official" `ROS Discord <https://discord.com/invite/HnVcz5a>`_.
 
   * Please try using ROS Answers first.
   
@@ -93,7 +93,7 @@ Other and/or Un-Official Resources
 ----
 
 ====
-To Understand ROS let's talk about its History
+History of ROS
 ====
 
 *PR2 Image*
@@ -113,7 +113,7 @@ To Understand ROS let's talk about its History
   * Create a company called `Willow Garage. <https://en.wikipedia.org/wiki/Willow_Garage>`_
   * From this org we get OpenCV, PCL, ROS, PR2 Robot, and many spin outs. 
 
-* ~2012 Willow Garage Folds, Open Robotics emerges.
+* ~2012 Willow Garage folds, Open Robotics emerges.
 
   * 2017 ROS 2 Begins to move ROS out of the lab (it was already out of the lab).
   * Address security and robustness concerns.
@@ -121,7 +121,7 @@ To Understand ROS let's talk about its History
 ----
 
 ====
-Let's Talk about Some Concepts that Motivate the Design of ROS
+Concepts that Motivate ROS
 ====
 
 ROS's design was informed by *design patterns* that were successfully used in prior robotic systems. We can't cover each of these in detail, but reading about them will help you better understand ROS.
@@ -138,15 +138,17 @@ ROS's design was informed by *design patterns* that were successfully used in pr
 ----
 
 ====
-Jumping in the Deep End: Start ADE and Install/Update Deps
+Jumping in the Deep End
 ====
+
+Let's start ADE and install / update deps
 
 * First things first, let's make sure everything is ready to go.
 * Now is a good time to hit pause on the video make sure you have intalled the requirements.
 * Install ADE as per Autoware Instructions.
 * Now were going to update the system, install ROS dashing, and a couple tools.
 
-::
+.. code-block:: bash
 
    ade start
    ade enter 
@@ -189,8 +191,8 @@ As we're diving headfirst into ROS our first job is to checkout a repository of 
 
 * Use Colcon to build the source.
   
-::
-   
+.. code-block:: bash
+
    source /opt/ros/dashing/setup.bash
    mkdir -p ~/ros2_example_ws/src
    cd ~/ros2_example_ws
@@ -203,7 +205,7 @@ As we're diving headfirst into ROS our first job is to checkout a repository of 
 ----
 
 ====
-Let's Learn about Nodes and Publishers together!
+Nodes and Publishers
 ====
 
 * The core of ROS is the ROS pub/sub bus. In ROS parlance this is called `topic`.
@@ -226,7 +228,7 @@ Let's Learn about Nodes and Publishers together!
 
 
 ====
-Preparing to Run a ROS Node: setup.bash files 
+Preparing to Run a ROS Node
 ====
 
 * Open a new terminal, in Byobu you can do this by pressing `F2`.
@@ -235,7 +237,7 @@ Preparing to Run a ROS Node: setup.bash files
   * `source ./ros2_example_ws/install/setup.bash`
   * Protip: you can find any file using `find ./ -name <file name>`  
   
-* **ROS Best Practice** _ALWAYS_ build and execute in different terminals.
+* **ROS Best Practice** *ALWAYS* build and execute in different terminals.
   
   * The build terminal should source the global ROS setup.bash file (i.e. /opt/ros/dashing/setup.bash).
   * The execution terminal should source the `setup.bash` of your workspace  
@@ -253,7 +255,7 @@ Let's Run a Simple C++ Publisher Node.
 * To run our publishing node, let's run the following command in our execution terminal: `ros2 run examples_rclcpp_minimal_publisher publisher_lambda`
 * If everything works you should see something like this:
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 run examples_rclcpp_minimal_publisher publisher_lambda 
    [INFO] [minimal_publisher]: Publishing: 'Hello, world! 0'
@@ -273,7 +275,7 @@ What just happened?
 * We just executed a ROS node that publishes a simple string message to a topic called `/topic` twice a second.
 * I'll show you how I know this with some tools. We'll cover these tools in detail next time.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic list
    /parameter_events
@@ -307,16 +309,18 @@ Digging into the Code
    #include <chrono>
    #include <memory>
 
-   #include "rclcpp/rclcpp.hpp" // THIS the header file for the ROS 2 C++ API
-   #include "std_msgs/msg/string.hpp" // This is header for the messages we want to user
+   #include "rclcpp/rclcpp.hpp" // THIS the header file for ROS 2 C++ API
+   #include "std_msgs/msg/string.hpp" // This is header for the messages we
+                                      // want to user
                                       // These are usually auto generated. 
 
    using namespace std::chrono_literals;
 
    /* This example creates a subclass of Node and uses std::bind() to register a
    * member function as a callback from the timer. */
-                                                   // Make a class called Minimal Publisher
-     class MinimalPublisher : public rclcpp::Node  // Have it inherit from the ROS Node Class
+     // Make a class called Minimal Publisher
+     class MinimalPublisher : public rclcpp::Node
+     // Have it inherit from the ROS Node Class
      
 ----
 
@@ -330,18 +334,17 @@ Let's Build our Node's Constructor
 
 
 .. code-block:: c++
-   :linenos:
-
-      class MinimalPublisher : public rclcpp::Node // Inherit from ROS Node
-      {
-      public:
-        MinimalPublisher()
-        : Node("minimal_publisher"), count_(0) // Set the node name
-        {   //Create a publisher that pushes std_msgs::msg to the topic "topic" 
-	    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10); 
-            timer_ = this->create_wall_timer( // Call timer_callback every 500ms
-              500ms, std::bind(&MinimalPublisher::timer_callback, this));
-        }
+ 
+   class MinimalPublisher : public rclcpp::Node // Inherit from ROS Node
+   {
+     public:
+       MinimalPublisher()
+       : Node("minimal_publisher"), count_(0) // Set the node name
+       {   //Create a publisher that pushes std_msgs::msg to the topic "topic" 
+         publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10); 
+         timer_ = this->create_wall_timer( // Call timer_callback every 500ms
+         500ms, std::bind(&MinimalPublisher::timer_callback, this));
+       }
 
 ----
 	
@@ -357,20 +360,19 @@ Now to Handle the Callback
   * Actually publish the newly constructed message.  
 
 .. code-block:: c++
-   :linenos:
 
-      private:
-       void timer_callback()
-       {
-         auto message = std_msgs::msg::String(); // create message
-         message.data = "Hello, world! " + std::to_string(count_++); // Fill it up
-         RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str()); // Log it
-         publisher_->publish(message); // Publish
-       }
-       // Create our private member variables. 
-       rclcpp::TimerBase::SharedPtr timer_;
-       rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-       size_t count_;
+   private:
+   void timer_callback()
+   {
+     auto message = std_msgs::msg::String(); // create message
+     message.data = "Hello, world! " + std::to_string(count_++); // Fill it up
+     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str()); // Log it
+     publisher_->publish(message); // Publish
+   }
+   // Create our private member variables. 
+   rclcpp::TimerBase::SharedPtr timer_;
+   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+   size_t count_;
 
 ----
 
@@ -384,15 +386,14 @@ Finally, Let's Create the Main for our Node
 * Finally the node cleans up everything and exits. 
 
 .. code-block:: c++
-   :linenos:
       
-     int main (int argc, char * argv[])
-     {
-       rclcpp::init(argc, argv); # Init RCL
-       rclcpp::spin(std::make_shared<MinimalPublisher>()); # Run the minimal publish
-       rclcpp::shutdown(); # Cleanup on shut down.
-       return 0;
-     }
+   int main (int argc, char * argv[])
+   {
+     rclcpp::init(argc, argv); // Init RCL
+     rclcpp::spin(std::make_shared<MinimalPublisher>());// Run the minimal publish
+     rclcpp::shutdown(); // Cleanup on shut down.
+     return 0;
+   }
 
 ----
 
@@ -429,26 +430,22 @@ Let's Try Subscribing.
 
 
 .. code-block:: c++
-   :linenos:
-      
-      #include <memory>
-
-      #include "rclcpp/rclcpp.hpp"
-      #include "std_msgs/msg/string.hpp"
-      using std::placeholders::_1;
-
-      // Again we inherit the public interface of a ROS node. 
-      class MinimalSubscriber : public rclcpp::Node
-      {
-        public:
-        MinimalSubscriber() // Construct our node, calling it minimal_subscriber
-        : Node("minimal_subscriber")
-        { // Create a subscription, to messages of the format stdmsg:msg:String
-          subscription_ = this->create_subscription<std_msgs::msg::String>(
-	  // Subscribe to the topic, "topic" and set a callback for when things are pub'd 
-	  "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
-	}
-      ...
+		
+   #include "rclcpp/rclcpp.hpp"
+   #include "std_msgs/msg/string.hpp"
+   using std::placeholders::_1;
+   // Again we inherit the public interface of a ROS node. 
+   class MinimalSubscriber : public rclcpp::Node
+   {
+     public:
+     MinimalSubscriber() // Construct our node, calling it minimal_subscriber
+     : Node("minimal_subscriber")
+     { // Create a subscription, to messages of the format stdmsg:msg:String
+       subscription_ = this->create_subscription<std_msgs::msg::String>(
+       // Subscribe to the topic, "topic" and set a callback for when things are pub'd 
+       "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+     }
+     ...
 
 ----
 
@@ -492,7 +489,7 @@ Let's Modify the Subscriber
 * Note that there are a lot of ways to change topic names, modifying source is just one approach. Offten we just `remap` topics instead of changing source.
 
 
-* Once you have modified the subscriber run `colocon build ` (it will build everything)
+* Once you have modified the subscriber run `colocon build` (it will build everything)
 * Open another terminal, source the bash file, and start the publisher.
 
   * `ros2 run examples_rclcpp_minimal_publisher publisher_member_function`
@@ -530,7 +527,7 @@ The subscriber screen should be pushing out:
 
 **You can terminate both of these programs with `CTRL-C`**
 
-*Congratulations, you now know the three most important ROS components, nodes, publishers, and subscribers. 
+*Congratulations, you now know the three most important ROS components, nodes, publishers, and subscribers.*
    
 ----
 
@@ -539,8 +536,8 @@ Making Things Happen with Services
 ====
 
 * Publishing and subscribing nodes are the bread and butter of ROS. This pattern is great for moving around a lot of data, and processing it quickly.
-* However, we often want our robots to respond to data. To construct simple behaviors in ROS we use `services.
-* A service is a robotic task that can be performed _synchronusly_, which is just afancy word for `while you wait.
+* However, we often want our robots to respond to data. To construct simple behaviors in ROS we use `services`.
+* A service is a robotic task that can be performed *synchronusly*, which is just a fancy word for, "while you wait".
 * A good analogy for services would be a regular old function call. In most programs when you call a function, the code making the call waits for the function to return before proceeding.
 * A few toy examples of services for autonomous driving would be:
   
@@ -560,11 +557,11 @@ C++ Service Example
 
 * As a toy example of a ROS service we are going to make a node that offers an "AddTwoInts" service.
 * What will happen is the service has two inputs, and returns a single output.
-* There is a full tutorial [about the process here](https://index.ros.org/doc/ros2/Tutorials/Writing-A-Simple-Cpp-Service-And-Client/). It goes into more detail and it is worth looking at.
+* There is a full tutorial `about the process here <https://index.ros.org/doc/ros2/Tutorials/Writing-A-Simple-Cpp-Service-And-Client/>`_. It goes into more detail and it is worth looking at.
 
 Let's start by looking at a pre-built `srv` file for this tutorial. If you were writing this service from scratch you would need to build this `srv` file yourself, but for this example there is one ready for us already. We'll use less to peek into the srv file.
 
-Run the following: `/opt/ros/dashing/share/example_interfaces/srv/AddTwoInts.srv`
+Run the following: `less /opt/ros/dashing/share/example_interfaces/srv/AddTwoInts.srv`
 
 The file should have the following:
 
@@ -582,22 +579,20 @@ Defining A Service
 ====
 
 Essentialy our service is a remote procedure call of a function that looks like this in pseudocode:
-`int64 sum = AddTwoInts(int64 a, int64b); `. Let's take a look at the C++ code that defines the service. Use your favorite text editor to open the following file:  `./ros2_example_ws/src/examples/rclcpp/minimal_service/main.cpp`.
+`int64 sum = AddTwoInts(int64 a, int64b);`.
+
+Let's take a look at the C++ code that defines the service. Use your favorite text editor to open the following file:  `./ros2_example_ws/src/examples/rclcpp/minimal_service/main.cpp`.
+
 
 .. code-block:: C++
-   :linenos:
       
-   #include <inttypes.h>
-   #include <memory>
    // This hpp file is autogenerated from the srv file. 
    #include "example_interfaces/srv/add_two_ints.hpp"
    #include "rclcpp/rclcpp.hpp"// ROS header.
-
    // Scope resolution to our services. 
    using AddTwoInts = example_interfaces::srv::AddTwoInts;
    // shared pointer to logger
    rclcpp::Node::SharedPtr g_node = nullptr;
-
    // Perform the service call 
    void handle_service(
      const std::shared_ptr<rmw_request_id_t> request_header,// Header with timestamp etc 
@@ -652,7 +647,7 @@ First we will fire up our service! The syntax for this is `ros2 run <pkg> <progr
       
     kscottz@ade:~$ ros2 run examples_rclpy_minimal_service service
     
-At this point nothing should happen. We need to __call__ the service. To do that we'll use a command line tool that's a little... long.
+At this point nothing should happen. We need to *call* the service. To do that we'll use a command line tool that's a little... long.
 
 We'll talk about this more in the next lesson, but the syntax is roughly, `ros2 service call <service_name> <service_call_format> <actual_data>`.
 
@@ -689,8 +684,7 @@ We just called our service from the command line to test it, but more often than
 Let's look at an example of how to do that. In your editor or using less take a look at the following file: `/home/kscottz/ros2_example_ws/src/examples/rclcpp/minimal_client/main.cpp` 
 
 .. code-block:: C++
-   :linenos:
-      
+
    // snipped 
    #include "example_interfaces/srv/add_two_ints.hpp" // include the service header file. 
    #include "rclcpp/rclcpp.hpp"
@@ -718,10 +712,9 @@ C++ Service Client Part Deux
 ====
       
 .. code-block:: C++
-   :linenos:
 
-   //... snip    
-   auto request = std::make_shared<AddTwoInts::Request>(); // shared memory to request 
+   // shared memory to request 
+   auto request = std::make_shared<AddTwoInts::Request>(); 
    request->a = 41;  // set the input values
    request->b = 1;   // set the input values
    auto result_future = client->async_send_request(request); // Send the request
@@ -870,20 +863,13 @@ Let's take a look at Action Server
 * Use your favorite text editor to open: `/home/kscottz/ros2_example_ws/src/examples/rclcpp/minimal_action_server/member_functions.cpp`
   
 .. code-block:: C++
-   :linenos:
 
-   #include <inttypes.h>
-   #include <memory>
-   #include "example_interfaces/action/fibonacci.hpp" // Our autogen header/ 
-   #include "rclcpp/rclcpp.hpp"
-   #include "rclcpp_action/rclcpp_action.hpp"
-   
+   <headers cut>
    class MinimalActionServer : public rclcpp::Node
    {
    public:  // Pre-defined interface files. 
       using Fibonacci = example_interfaces::action::Fibonacci;
       using GoalHandleFibonacci = rclcpp_action::ServerGoalHandle<Fibonacci>;
-      
       explicit MinimalActionServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
       : Node("minimal_action_server", options)
       {
@@ -910,7 +896,6 @@ Actions: Accept or Cancel
 Let's deal with accepting a goal, or canceling a goal. 
 
 .. code-block:: C++
-   :linenos:
 
    private:
      rclcpp_action::Server<Fibonacci>::SharedPtr action_server_;
@@ -944,7 +929,6 @@ The Meat of the Fib Function
 ====
 
 .. code-block:: C++
-   :linenos:
 
    void execute(const std::shared_ptr<GoalHandleFibonacci> goal_handle)
    { // This is the meaty part of the function 
@@ -990,8 +974,10 @@ The Meat of the Fib Function
     std::thread{std::bind(&MinimalActionServer::execute, this, _1), goal_handle}.detach();
   }
 
+----
+
 ====
-Finally, Let's Put our Class into an Executable
+Let's Put our Class into an Executable
 ====
 
 .. code-block:: C++
@@ -1041,6 +1027,12 @@ Now we're going to manually call the server from the ROS 2 CLI. We'll cover this
 
    Goal finished with status: SUCCEEDED
 
+----
+
+====
+Meanwhile, Back at The Server
+====
+
 You can use `F3` to see what happened to our action and its status updates.
 
 .. code-block:: bash
@@ -1062,10 +1054,9 @@ Action Client
 
 * Let's take at the client side API implementation. Open the file:
 
-  `~/ros2_example_ws/src/examples/rclcpp/minimal_action_client/member_functions.cpp`
-
+  `~/ros2_example_ws/src/examples/rclcpp/
+        minimal_action_client/member_functions.cpp`
 * We'll address the basic implementation but that directory has additional examples for other use cases and things like canceling an action mid-process.
-
 * It is worth understanding what we're doing, it is more than sending just the goal. Roughly this classs does the following:
 
   * Check's for a connection to ROS, and the action server.
@@ -1081,12 +1072,11 @@ Let's Create A Client Class
 ====
     
 .. code-block:: C++
-   :linenos:
+
 
    #include "example_interfaces/action/fibonacci.hpp"
    #include "rclcpp/rclcpp.hpp"
    #include "rclcpp_action/rclcpp_action.hpp"
-
    class MinimalActionClient : public rclcpp::Node
    {
       public: // looks familiar, pulling in the action interface, and the goal type
@@ -1113,11 +1103,9 @@ Let's Create A Client Class
 Sending the Goal 
 ====
 
-* Our client constructor above set a time to call `send_goal` after 500ms. We'll bind our member functions to the action events and then send the goals. 
-
+Our client constructor above set a time to call `send_goal` after 500ms. We'll bind our member functions to the action events and then send the goals. 
   
 .. code-block:: C++
-   :linenos:
       
       // method to check if goal is done
       bool is_goal_done() const
@@ -1145,6 +1133,15 @@ Sending the Goal
 	 goal_msg.order = 10;
 	 RCLCPP_INFO(this->get_logger(), "Sending goal");
 
+
+----
+
+====
+More Send_Goal
+====
+
+.. code-block:: C++
+		
 	 auto send_goal_options = rclcpp_action::Client<Fibonacci>::SendGoalOptions();
 	 // response callback (success/failure)
 	 send_goal_options.goal_response_callback =
@@ -1168,7 +1165,6 @@ Handling the Responses
 Next up we create our private member variables and define the functions that get called with the goal response and the periodic feedback. 
 
 .. code-block:: C++
-   :linenos:
    
    private:
       rclcpp_action::Client<Fibonacci>::SharedPtr client_ptr_;
@@ -1184,7 +1180,6 @@ Next up we create our private member variables and define the functions that get
 	 RCLCPP_INFO(this->get_logger(), "Goal accepted by server, waiting for result");
 	 }
       }
-
       // handle the feedback calls, these should be the format of feedback. 
       void feedack_callback(
       GoalHandleFibonacci::SharedPtr,
@@ -1304,4 +1299,4 @@ Wrapping Up...
 * I would encourage you to modify these examples to build a better idea of how they work.
 
 
-**Next time we'll cover the ROs 2 API.**
+**Next time we'll cover the ROS 2 CLI**
