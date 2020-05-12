@@ -2,18 +2,19 @@
 Lesson 2: ROS API and Build Tools
 ====
 
-* This lesson is intended to be an hour long crash course in the ROS 2 Dashing API and build tools. * After this lesson you should be able to code and build a rudimentary ROS 2 application.
+* This lesson is intended to be an hour long crash course in the ROS 2 Dashing API and build tools.
+* After this lesson you should be able to code and build a rudimentary ROS 2 application.
 * It should be noted, that since this is a "crash course" we are giving you a pre-configured Docker environment call ADE.
   
   * We will not cover setting up the ROS environment.
   * This will be left as an exercise to the reader.
-  * As much as possible we have used the tooling availabe *ROS 2 Dashing desktop full* installation.
+  * As much as possible we have used the tooling available *ROS 2 Dashing desktop full* installation.
 
 
 * This crash course was written for ROS 2 Dashing.
   
   * ROS 2 Foxy is about to be released.
-  * This relase is the first major, stable, release of ROS 2. 
+  * This release is the first major, stable, release of ROS 2. 
 
 * The next lesson, lesson 3, will show you how to use the ROS 2 command line interface. 
 
@@ -35,7 +36,7 @@ Before We Begin...
 **ROS is hard. There are many topics you must learn to become a skilled robotocist. We try to make it easy, but be aware the path ahead is difficult. You will get stuck. You will get frustrated. You will need help**
 
 
-*The good news is, all of this is ok and completely normal; there are resources out there to help!* 
+*The good news is, all of this is OK and completely normal; there are resources out there to help!* 
 
 ----
 
@@ -69,11 +70,11 @@ Getting Help!
 ----
 
 ====
-Other and/or Un-Official Resources
+ Other and/or Unofficial Resources
 ====
 
 * The ROS / Robotics Sub Reddits are Great!
-* There is an "un-official" `ROS Discord <https://discord.com/invite/HnVcz5a>`_.
+* There is an "unofficial" `ROS Discord <https://discord.com/invite/HnVcz5a>`_.
 
   * Please try using ROS Answers first.
   
@@ -84,7 +85,7 @@ Other and/or Un-Official Resources
 * We're not big on social media but we're busy on the twitter.
 
   * `@OpenRoboticsOrg <https://twitter.com/openroboticsorg>`_ is a bit more active.
-  * `@ROSOrg <https://twitter.com/rosorg>`_ "Offical" ROS announcements.
+  * `@ROSOrg <https://twitter.com/rosorg>`_ "Official" ROS announcements.
 
 * `Open Robotics <https://www.openrobotics.org/>`_ is the non-profit that administers ROS and Ignition Gazebo.
 
@@ -128,11 +129,11 @@ ROS's design was informed by *design patterns* that were successfully used in pr
 
 * **Processes / Threads ==> ROS Nodes** -- A ROS Node is a self contained execution process, like a program. ROS is really a lot of tooling for running a bunch of programs in parallel. 
 * **Buses / PubSub ==> ROS Topics** -- The backbone of ROS is a `publish/subscribe bus <https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern>`_. If you have ever used ZeroMQ, RabbitMQ, or ModBus, ROS topics are very similar. 
-* **Serialization ==> ROS Messages / ROS Bags** -- ROS uses a pre-defined messages to move data over topics. This allows data to be `serialized <https://en.wikipedia.org/wiki/Serialization>`_ between nodes in different programming languages. An analog would be Google Protocol Buffers. ROS can be written to file, called a bag. A good analogy is a python pickle file.   
+* **Serialization ==> ROS Messages / ROS Bags** -- ROS uses a predefined messages to move data over topics. This allows data to be `serialized <https://en.wikipedia.org/wiki/Serialization>`_ between nodes in different programming languages. An analog would be Google Protocol Buffers. ROS can be written to file, called a bag. A good analogy is a python pickle file.   
 * **Black Board Pattern  ==> ROS Params** -- A `blackboard <https://en.wikipedia.org/wiki/Blackboard_(design_pattern)>`_ is a way to create global variables between nodes/programs. A good analogy would be Redis. 
-* **Synchronus Remote Procedure Call (RPC)  ==> ROS Services** -- A ROS service is a program that can be called by another program. The caller is blocked until the callee returns.  This is formerly called a `remote procedure call <https://en.wikipedia.org/wiki/Remote_procedure_call>`_. 
-* **Asynchronus Remote Procedure Call (RPC)  ==> ROS Actions** -- A ROS action is a program that can be called by another program. The caller is **not** blocked until the callee returns.  
-* **State Machines ==> ROS Lifecycles** -- `State machines <https://en.wikipedia.org/wiki/Finite-state_machine>`_ are a tool to move between states, or modes. State machines are a useful way to model machine behavior. 
+* **Synchronous Remote Procedure Call (RPC)  ==> ROS Services** -- A ROS service is a program that can be called by another program. The caller is blocked until the callee returns.  This is formerly called a `remote procedure call <https://en.wikipedia.org/wiki/Remote_procedure_call>`_. 
+* **Asynchronous Remote Procedure Call (RPC)  ==> ROS Actions** -- A ROS action is a program that can be called by another program. The caller is **not** blocked until the callee returns.  
+* **State Machines ==> ROS Life cycles** -- `State machines <https://en.wikipedia.org/wiki/Finite-state_machine>`_ are a tool to move between states, or modes. State machines are a useful way to model machine behavior. 
 * **Matrix Math for 3D Operations ==> URDF and TF** -- TF, short for transform, and URDF (universal robot description format) are tools for automatically `calculating robot geometry using matrix math <https://en.wikipedia.org/wiki/Matrix_(mathematics)>`_ .
   
 ----
@@ -144,7 +145,7 @@ Jumping in the Deep End
 Let's start ADE and install / update deps
 
 * First things first, let's make sure everything is ready to go.
-* Now is a good time to hit pause on the video make sure you have intalled the requirements.
+* Now is a good time to hit pause on the video make sure you have installed the requirements.
 * Install ADE as per Autoware Instructions.
 * Now were going to update the system, install ROS dashing, and a couple tools.
 
@@ -300,7 +301,7 @@ Digging into the Code
 ====
 
 * Let's take a look at the code. Like a lot of software there is more than one way to skin a cat. Let's look at the member function approach.
-* Using your favorite editor open the folloing source file, `./ros2_example_ws/src/examples/rclcpp/minimal_publisher/member_function.cpp`
+* Using your favorite editor open the following source file, `./ros2_example_ws/src/examples/rclcpp/minimal_publisher/member_function.cpp`
 * **rclcpp** is an abbreviation of "ROS Client Library C++", its the ROS C++ API
   
 .. code-block:: c++
@@ -328,7 +329,7 @@ Digging into the Code
 Let's Build our Node's Constructor
 ====
 
-* The `MinimalPublisher` constructor inherits fomr the RCLCPP Base Class, gives the name a node, and sets our counter.
+* The `MinimalPublisher` constructor inherits from the RCLCPP Base Class, gives the name a node, and sets our counter.
 * The next line creates a publisher object that publishes `std_msgs::msg`.
 * The constructor then creates a callback to the function `timer_callback` that gets called every 500ms. 
 
@@ -402,7 +403,7 @@ Exercise:  Modify and Build this Node
 ====
 * Let's try to make a few modification to our node for practice.
 
-  * Make it run at 10Hz (100ms) insteand of 500.
+  * Make it run at 10Hz (100ms) instead of 500.
   * Change the topic name from "topic" to "greetings."
   * Change the message "Hello Open Road."
   * Change the node name from `minimal_publisher`, `revenge_of_minimal_publisher`
@@ -453,7 +454,7 @@ Let's Try Subscribing.
 More Subscriber
 ====
 
-* The subscriber node looks fairly similar to our publisher but instead of publishing on a regular callback, we get a callback when a new messae hits our topic. 
+* The subscriber node looks fairly similar to our publisher but instead of publishing on a regular callback, we get a callback when a new message hits our topic. 
 
 .. code-block:: c++
    :linenos:
@@ -486,7 +487,7 @@ Let's Modify the Subscriber
 
 * In the publisher we changed the name of our publisher topic to `greetings.`
 * Let's change the subscribed topic to `greetings`.
-* Note that there are a lot of ways to change topic names, modifying source is just one approach. Offten we just `remap` topics instead of changing source.
+* Note that there are a lot of ways to change topic names, modifying source is just one approach. Often we just `remap` topics instead of changing source.
 
 
 * Once you have modified the subscriber run `colocon build` (it will build everything)
@@ -537,7 +538,7 @@ Making Things Happen with Services
 
 * Publishing and subscribing nodes are the bread and butter of ROS. This pattern is great for moving around a lot of data, and processing it quickly.
 * However, we often want our robots to respond to data. To construct simple behaviors in ROS we use `services`.
-* A service is a robotic task that can be performed *synchronusly*, which is just a fancy word for, "while you wait".
+* A service is a robotic task that can be performed *synchronously*, which is just a fancy word for, "while you wait".
 * A good analogy for services would be a regular old function call. In most programs when you call a function, the code making the call waits for the function to return before proceeding.
 * A few toy examples of services for autonomous driving would be:
   
@@ -559,7 +560,7 @@ C++ Service Example
 * What will happen is the service has two inputs, and returns a single output.
 * There is a full tutorial `about the process here <https://index.ros.org/doc/ros2/Tutorials/Writing-A-Simple-Cpp-Service-And-Client/>`_. It goes into more detail and it is worth looking at.
 
-Let's start by looking at a pre-built `srv` file for this tutorial. If you were writing this service from scratch you would need to build this `srv` file yourself, but for this example there is one ready for us already. We'll use less to peek into the srv file.
+Let's start by looking at a prebuilt `srv` file for this tutorial. If you were writing this service from scratch you would need to build this `srv` file yourself, but for this example there is one ready for us already. We'll use less to peek into the srv file.
 
 Run the following: `less /opt/ros/dashing/share/example_interfaces/srv/AddTwoInts.srv`
 
@@ -578,7 +579,7 @@ The file should have the following:
 Defining A Service
 ====
 
-Essentialy our service is a remote procedure call of a function that looks like this in pseudocode:
+Essentially our service is a remote procedure call of a function that looks like this in pseudocode:
 `int64 sum = AddTwoInts(int64 a, int64b);`.
 
 Let's take a look at the C++ code that defines the service. Use your favorite text editor to open the following file:  `./ros2_example_ws/src/examples/rclcpp/minimal_service/main.cpp`.
@@ -630,7 +631,7 @@ ROS 2 Service Main
 
 The main entry point is pretty simple. It does the following.
 
-* Intialize the program.
+* Initialize the program.
 * Get a shared pointer to the ROS node interface.
 * Create the service, of type AddTwoInts, named add_two_ints, pointing to the function `handle_service.`
 * Run the node until shutdown.
@@ -772,10 +773,10 @@ You can see the debug input  has been printed to the terminal.
 ROS C++ Actions
 ====
 
-* Actions are ROS / ROS 2's answers to asynchronus remote procedure calls.
+* Actions are ROS / ROS 2's answers to asynchronous remote procedure calls.
 * Notice how quickly how fast our service call happened. It was more or less instant.
-* Actions are the preffered approach for things that may not happen instantaneously.
-* The cannonical example of a ROS Action would be sending the robot a command to navigate to a waypoint.
+* Actions are the preferred approach for things that may not happen instantaneously.
+* The canonical example of a ROS Action would be sending the robot a command to navigate to a way point.
 * The process of navigation is going to take a bit of time, what we want to do is to kick off the process, wait for updates, and then once things are complete we get a result. 
 * Just like services there are two parts of an action. The action server and the action client. *Note that there can be more than one client.*
 * Actions become fairly complex as they can serve multiple clients. This means the action may need to keep track of multiple concurrent connections.
@@ -787,7 +788,7 @@ ROS C++ Actions
 ----
 
 ====
-Fibbonaci Action
+Fibonacci Action
 ====
 
 For our action server we're going to create a toy example, this example will calculate the `Nth number` in the `Fibonacci series <https://en.wikipedia.org/wiki/Fibonacci_number>`_. So, what will happen when we call this toy action?
@@ -808,7 +809,7 @@ Action Definition Files
 
 * These action files are written in YAML and use the `*.action` suffix. 
 
-* The ROS meta build system colcon will use these action files to automagically generate all of the header files.
+* The ROS meta build system colcon will use these action files to auto-magically generate all of the header files.
 
 
 Let's take a look at an action file.
@@ -832,7 +833,7 @@ Let's take a look at an action file.
 Really quick, let's look under the hood!
 ====
 
-As we said previously, the `*.action` is used to autogenerate a bunch of other files. We can see this if we go down one directory to msg.
+As we said previously, the `*.action` is used to auto-generate a bunch of other files. We can see this if we go down one directory to msg.
 
 What we'll see is that the `*.action` file is used to generate a bunch of ROS topic messages mapping to states in our action.
 
@@ -1057,13 +1058,13 @@ Action Client
   `~/ros2_example_ws/src/examples/rclcpp/
         minimal_action_client/member_functions.cpp`
 * We'll address the basic implementation but that directory has additional examples for other use cases and things like canceling an action mid-process.
-* It is worth understanding what we're doing, it is more than sending just the goal. Roughly this classs does the following:
+* It is worth understanding what we're doing, it is more than sending just the goal. Roughly this class does the following:
 
   * Check's for a connection to ROS, and the action server.
   * Sends the goal.
   * Checks that the goal was "accepted" after sending.
   * Updates the log/screen as interim feedback gets sent.
-  * Recieves the final results. 
+  * Receives the final results. 
 
 ----
 
