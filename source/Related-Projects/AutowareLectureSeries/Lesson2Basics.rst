@@ -788,6 +788,18 @@ ROS C++ Actions
 ----
 
 ====
+Parts of an Action
+====
+
+* Find the action. An action server may be down!
+* The Action Request -- the service *can* decline to take an action.
+* The Action being accepted.
+* The Action being canceled. Sometimes the client changes its mind.
+* The action "feedback", sending back info from server to client. 
+* Send the result to the client -- the result could be the thing happened succesfully, or not!
+
+
+====
 Fibonacci Action
 ====
 
