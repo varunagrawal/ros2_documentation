@@ -646,7 +646,7 @@ First we will fire up our service! The syntax for this is `ros2 run <pkg> <progr
 
 .. code-block:: bash
       
-    kscottz@ade:~$ ros2 run examples_rclpy_minimal_service service
+    kscottz@ade:~$ ros2 run examples_rclcpp_minimal_service service_main 
     
 At this point nothing should happen. We need to *call* the service. To do that we'll use a command line tool that's a little... long.
 
@@ -668,7 +668,7 @@ Now switch back to your original terminal, you should see something like this:
 
 .. code-block:: bash
 
-   kscottz@ade:~$ ros2 run examples_rclpy_minimal_service service
+   kscottz@ade:~$ ros2 run examples_rclcpp_minimal_client client_main  
    3[INFO] [minimal_service]: Incoming request
    a: 1 b: 1
 
@@ -745,13 +745,13 @@ First fire up your service if it isn't already running.
 
 .. code-block:: bash
 		
-   $ ros2 run examples_rclpy_minimal_service service
+   $ ros2 run examples_rclcpp_minimal_service service_main 
 
 Now start the client in a second terminal. 
 
 .. code-block:: bash
 		
-   $ ros2 run examples_rclpy_minimal_client client
+   $ ros2 run examples_rclcpp_minimal_client client_main 
    [INFO] [minimal_client]: Result of add_two_ints: for 41 + 1 = 42
 
 The client should fire off a request right away. You can see the result.
@@ -760,7 +760,7 @@ Finally, toggle back to the service.
 
 .. code-block:: bash
    
-   $ ~/ros2_example_ws$ ros2 run examples_rclpy_minimal_service service
+   $ ~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_service service_main 
    [INFO] [minimal_service]: Incoming request
    a: 41 b: 1
 
@@ -1008,7 +1008,7 @@ Let's Run Our Action and Call It.
 
 .. code-block:: bash
 
-   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclpy_minimal_action_server server
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_service service_main 
 
 
 Now we're going to manually call the server from the ROS 2 CLI. We'll cover this in more depth in the next lesson. If you're using byobu use `F3` to go to a second terminal or `F2` to make a new one.
@@ -1055,8 +1055,9 @@ Action Client
 
 * Let's take at the client side API implementation. Open the file:
 
-  `~/ros2_example_ws/src/examples/rclcpp/
-        minimal_action_client/member_functions.cpp`
+`~/ros2_example_ws/src/examples/rclcpp/ minimal_action_client/member_functions.cpp`
+
+  
 * We'll address the basic implementation but that directory has additional examples for other use cases and things like canceling an action mid-process.
 * It is worth understanding what we're doing, it is more than sending just the goal. Roughly this class does the following:
 
@@ -1264,14 +1265,14 @@ Let's Run our Client
 
 .. code-block:: bash
 
-   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclpy_minimal_action_server server
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_service service_main 
 
 
 Next we'll run our client. 
 
 .. code-block:: bash
 
-   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclpy_minimal_action_client client
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_action_client action_client_member_functions 
    [INFO] [minimal_action_client]: Waiting for action server...
    [INFO] [minimal_action_client]: Sending goal request...
    [INFO] [minimal_action_client]: Goal accepted :)
