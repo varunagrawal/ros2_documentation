@@ -1020,7 +1020,7 @@ Let's Run Our Action and Call It.
 
 .. code-block:: bash
 
-   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_service service_main 
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_action_server action_server_member_functions
 
 
 Now we're going to manually call the server from the ROS 2 CLI. We'll cover this in more depth in the next lesson. If you're using byobu use `F3` to go to a second terminal or `F2` to make a new one.
@@ -1277,7 +1277,7 @@ Let's Run our Client
 
 .. code-block:: bash
 
-   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_service service_main 
+   kscottz@ade:~/ros2_example_ws$ ros2 run examples_rclcpp_minimal_action_server action_server_member_functions
 
 
 Next we'll run our client. 

@@ -10,29 +10,35 @@ Lesson 1: Building ROS workspace
 Lesson 2: ROS 2 101 - Just the basics
 -----
 
-#. What is a robot?
-#. History of ROS
-#. ROS 2: Production Ready Boogaloo
-    #. Maturity
-    #. Security
-    #. RTOS Support
-    #. Portability
-#. 30 Minutes of Robotics Concepts
-    #. Concurrency (not your problem)
-    #. Message Passing / Buses
-    #. Black Boards
-    #. State Machines
-    #. Real Time (not really)
-#. Pillars of ROS
-    #. Nodes
-    #. Messages and Topics
-    #. Services
-    #. Actions
-    #. Parameters
-#. Playing Well With Others
-    #. Packages
-    #. Workspaces
-    #. Run-Time Tools
+#. Intro
+#. Getting Help
+#. Unofficial Resources
+#. ROS Intro
+   #. Brief Intro to ROS
+   #. Core Concepts of ROS
+   #. Environment Setup
+   #. Colcon Nomenclature
+#. Nodes and Publishers
+   #. Overview of Topics
+   #. Building and Running a Node
+   #. Simple Publisher Build and Run
+   #. Modify the Publisher
+   #. Building a Subscriber
+   #. Pub/Sub Working Together
+#. Services
+   #. Concept Overview
+   #. Review Basic Service
+   #. Running Basic Services
+   #. Calling Services from Command Line
+   #. Building a Service Client
+   #. Executing Service Server/Client.
+#. Actions
+   #. Action Overview
+   #. Action File Review
+   #. Basic Action Review
+   #. Running / Calling an Action
+   #. Action Client Review
+   #. Running Action Server with Client. 
 
 
 Lesson 3: ROS 2 Tooling - Develop Like a Pro
