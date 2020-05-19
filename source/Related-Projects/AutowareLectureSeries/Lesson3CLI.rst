@@ -1,12 +1,3 @@
-====
-ROS 2 Tooling: Introduction to CLI and friends
-====
-
-#. Overview and motivating concepts
-    #. The command line
-    #. Environment variables
-
-----
 
 ====
 The command line
@@ -29,10 +20,34 @@ The command line
 ----
 
 ====
+Let's Fire up ADE 
+====
+
+* It is worth noting this should work for any Ubuntu 18.04 machine.
+* You'll have to do this every time you restart ADE!
+
+
+Let's setup our environment::
+  
+  cd adehome
+  export PATH=$PATH:$PWD
+  ade start
+  ade enter
+
+  source /opt/ros/dashing/setup.bash 
+  sudo apt update
+  sudo apt install ros-dashing-turtlesim
+  sudo apt install ros-dashing-rqt-*
+  sudo apt install byobu
+
+
+----
+
+====
 *Example of --help* 
 ====
 
-Here is ros2 ``--help``::
+Here is ros2 ``--help``:: 
   
   kscottz@ade:~$ ros2 --help
   usage: ros2 [-h] Call `ros2 <command> -h` for more detailed usage. ...
@@ -79,7 +94,7 @@ General format is ``ros2 run <package_name> <executable_name> <flags>``
 * Generally if tabbing works, you are good to go.
 * Don't know a full package name? Try tabbing.
 * Don't know the executables in a package?
-  * **TRY TABBING!!!**
+  * TRY TABBING!!!
 * Why don't we try starting this `turtlesim node`.
 * In your terminal type ``ros2 run turtlesim turtlesim_node``
 
@@ -130,7 +145,7 @@ Let's explore what's happening
 * *What if we didn't know what was going on?*
 * What if we worked with a large team and a lot of programs, or nodes, were created by our team mates?
 
-**How can we figure out what nodes are running on our simulated robot?**
+`How can we figure out what nodes are running on our simulated robot?`
 
 ----
 
@@ -141,7 +156,9 @@ Inspecting nodes
 * Open a new terminal by pressing ``F2``
 * Source your bash file ``source /opt/ros/dashing/setup.bash``
 
-Let's try inspecting our running nodes::
+Let's try inspecting our running nodes
+
+.. code-block:: bash
 
   kscottz@ade:~$ source /opt/ros/dashing/setup.bash
   
@@ -166,7 +183,9 @@ Let's try inspecting our running nodes::
 Let's try node list
 ====
 
-Let's try ``ros2 node list``::
+Let's try ``ros2 node list``
+
+.. code-block:: bash::
 
   kscottz@ade:~$ ros2 node list
   /draw_square  <== This is the node moving the turtle.
@@ -237,7 +256,9 @@ Let's use help to see our options for this command.
 
 In your terminal run ``ros2 topic -h``
 
-Try this::
+Try this:
+
+.. code-block:: bash
   
   kscottz@ade:~$ ros2 topic
   usage: ros2 topic [-h] [--include-hidden-topics]
@@ -268,7 +289,7 @@ Let's look at the topics in TurtleSim
 
 Let's start with ``ros2 topic list``.
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 topic list -h
    usage: ros2 topic list [-h] [--spin-time SPIN_TIME] [-t] [-c]
@@ -304,7 +325,7 @@ Digging into topics
 * Why don't we take a look at ``/turtle1/pose/``?
 * First, we'll look at the docs for echo using the ``-h`` or help flag.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic echo -h
    usage: ros2 topic echo [-h] [--csv] [--full-length]
@@ -331,12 +352,12 @@ Let's echo a topic, but there are a couple things to keep in mind!
 
 * You need to give the full path to your topic.
 * *However, you can use tab complete to go fast.*
-* This will spit out **a lot** of data really fast.
+* This will spit out `a lot` of data really fast.
 * You can stop the command with ``CTRL+C``. This works for almost all CLI programs.
 
 You should see roughly the following...
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic echo /turtle1/pose
    ---
@@ -372,8 +393,7 @@ There are some tricks to work with this data.
 * Topic echo has some nice flags that are quite handy!
 
   * The ``--csv`` flag outputs data in CSV format.
-  * You will still need to use the file pipe mentioned above.
-  * This will allow you to automatically create a spreadsheet of data!
+  * You will still need to use the file pipe mentioned above. 
   * Example: ``ros2 topic echo --csv /turtle1/pose > temp.csv``
 
 ----
@@ -391,7 +411,7 @@ Let's look at a few.
 * Like all CLI commands close it with ``CTRL+C``
 
  
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic bw -w 100 /turtle1/pose
    Subscribed to [/turtle1/pose]
@@ -400,10 +420,17 @@ Let's look at a few.
    average: 1.51KB/s
         mean: 0.02KB min: 0.02KB max: 0.02KB window: 100
 
+
+---
+
+====
+Topic Diagnostics
+====
+
 * The ``topic hz`` command, or hertz command, is used to measure how frequently a given topic publishes. Frequencies are usually measured in a unit of Hertz, or cycles per second.
 * The ``hz`` command will publish the low, high, average, and standard deviation of the message publishing frequency.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic hz /turtle1/pose 
    average rate: 63.917
@@ -422,13 +449,19 @@ The ``info`` command lists the number of publishers and subscribers
 
 Let's take a quick look:
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic info /turtle1/pose 
    Topic: /turtle1/pose
    Publisher count: 1
    Subscriber count: 1
 
+----
+   
+====
+Topic Info Continued
+====
+   
 Another related tool for looking at topics is the ``msg show`` command. 
 ROS topics use standard messaging formats. 
 If you would like to know the types and format of a message this command will do that. 
@@ -436,7 +469,7 @@ Below is an example for TurtleSim.
 Be aware that this tool uses tab completion. 
 If you know don't know where or what you are looking for it can help!
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 msg show turtlesim/msg/
    turtlesim/msg/Color  turtlesim/msg/Pose   
@@ -460,9 +493,9 @@ Publishing a message the hard way
 * This command is difficult to get right as you have to write the message in YAML format.
 * The ``ros2 msg show`` command will help with this.
 
-**To run this command you'll need to stop the draw square node. Use F2/F3 to change to the correct screen and then enter CTRL+C**
+`To run this command you'll need to stop the draw square node. Use F2/F3 to change to the correct screen and then enter CTRL+C`
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist '{linear: {x: 2.0,
    y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}'
@@ -510,7 +543,7 @@ For example, if you were building an autonomous vehicle and wanted to cap the ma
 
 Let's take a look at the high level param program.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 param --help
    Various param related sub-commands
@@ -530,7 +563,7 @@ Params used by TurtleSim
 
 Let's see what the docs say and then see what happens when we call ``ros2 param list``
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 param --help
    usage: ros2 param [-h]
@@ -567,7 +600,7 @@ The syntax for getting a parameter is as follows:
 
 Let's give it a shot.
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 param get /turtlesim background_b
    Integer value is: 255
@@ -576,12 +609,12 @@ Let's try setting a parameter. The syntax for that is as follows:
 
 ``ros2 set <node name> <param name> <value>``
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 param set /turtlesim background_b 0
    Set parameter successful
 
-** KAT -- THIS SEEMS TO BE BROKEN!? **
+`Note that THIS SEEMS TO BE BROKEN!?`
 
 ----
 
@@ -590,23 +623,26 @@ Services
 ====
 
 * The full ROS 2 Services tutorials `can be found here. <https://index.ros.org/doc/ros2/Tutorials/Services/Understanding-ROS2-Services/>`_
+* ROS2 Services, as we have discussed previously, are another level of extraction built on top of ROS 2 topics. 
+* At its core, a service is just an API for controlling a robot task.  
+* A good analogy for ROS Services are  `remote procedure calls <https://en.wikipedia.org/wiki/Remote_procedure_call>`_ .
+* Another good analogy for services would be making an REST API call. 
+* Curling a remote REST API endpoint to query data on a remote server is very similar to a ROS service.
+* Essentially the ROS API allows every node to publish a list of services, and subscribe to  services from other nodes.
 
-ROS2 Services, as we have discussed previously, are another level of extraction built on top of ROS 2 topics. 
-At its core, a service is just an API for controlling a robot task.  
-A good analogy for ROS Services are  `remote procedure calls <https://en.wikipedia.org/wiki/Remote_procedure_call>`_ . 
-Another good analogy for services would be making an REST API call. 
-Curling a remote REST API endpoint to query data on a remote server is very similar to a ROS service.
-Essentially the ROS API allows every node to publish a list of services, and subscribe to  services from other nodes.
+----
 
+====
+Services Continued
+====
 
-The root command for ROS services is the ``ros2 service`` command. 
-Just like all the other commands we have looked at, let's run ``ros2 service --help`` to see what we can do.
-
-**There is an important distinction between ros2 srv and ros2 service.** 
-**The former is for installed services while the latter is for running services. 
+* The root command for ROS services is the ``ros2 service`` command. 
+* Just like all the other commands we have looked at, let's run ``ros2 service --help`` to see what we can do.
+* There is an important distinction between ros2 srv and ros2 service.
+* The former is for installed services while the latter is for running services. 
 We'll focus on the latter, but ``srv`` is very similar.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 service --help
    usage: ros2 service [-h] [--include-hidden-services]
@@ -626,7 +662,7 @@ Listing available services
 
 Let's take a look at what we can do with ``ros2 service list``.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 service list --help
    usage: ros2 service list [-h] [--spin-time SPIN_TIME] [-t] [-c]
@@ -641,7 +677,7 @@ Let's take a look at what we can do with ``ros2 service list``.
 
 This command is fairly straight forward with only two utility flags. Let's use the ``-t`` flag
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 service list -t
    /clear [std_srvs/srv/Empty]
@@ -654,12 +690,7 @@ This command is fairly straight forward with only two utility flags. Let's use t
    /kill [turtlesim/srv/Kill]
    /reset [std_srvs/srv/Empty]
    /spawn [turtlesim/srv/Spawn]
-   /turtle1/set_pen [turtlesim/srv/SetPen]
-   /turtle1/teleport_absolute [turtlesim/srv/TeleportAbsolute]
-   /turtle1/teleport_relative [turtlesim/srv/TeleportRelative]
-   /turtlesim/describe_parameters [rcl_interfaces/srv/DescribeParameters]
-   /turtlesim/get_parameter_types [rcl_interfaces/srv/GetParameterTypes]
-   /turtlesim/get_parameters [rcl_interfaces/srv/GetParameters]
+   ... SNIP ...
    /turtlesim/list_parameters [rcl_interfaces/srv/ListParameters]
    /turtlesim/set_parameters [rcl_interfaces/srv/SetParameters]
    /turtlesim/set_parameters_atomically [rcl_interfaces/srv/SetParametersAtomically]
@@ -674,7 +705,7 @@ Calling a ROS 2 service
 Let's explore the ``ros2 service call`` command.
 
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 service call -h
    usage: ros2 service call [-h] [-r N] service_name service_type [values]
@@ -710,7 +741,7 @@ Basic example, blank services.
 
 Why don't we give it a call. The empty service message can be found in ``std_srvs/srv/Empty``, thus our call is as follows:
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 service call /reset std_srvs/srv/Empty
    waiting for service to become available...
@@ -730,7 +761,7 @@ Service call result
 .. image:: ./images/reset_service.png
 	   :width: 800
 
-**The service reset the screen, and changed our turtle icon!**
+`The service reset the screen, and changed our turtle icon!`
 
 Try toggling the ``draw_square`` program and the ``reset`` service a few times.
 
@@ -749,7 +780,7 @@ The best way to determine the name of a service is to use the ``srv`` verb in RO
 
 The way we do this is running ``ros2 srv show turtlesim/srv/Spawn``.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 srv show turtlesim/srv/Spawn
    float32 x
@@ -773,7 +804,7 @@ Services with complex messages
 The format of the message is YAML inside quotation marks. 
 Following from the information above let's make a few turtles.
 
-::
+.. code-block:: bash
 
    string namekscottz@ade:~$ ros2 service call /spawn turtlesim/srv/Spawn "{x: 2, y: 2, theta: 0.2, name: 'larry'}"
    waiting for service to become available...
@@ -804,7 +835,7 @@ Following from the information above let's make a few turtles.
 Service call results!
 ====
 
-**If everything went well we should see something like this.**
+`If everything went well we should see something like this.`
 
 
 .. image:: ./images/four_turtles.png
@@ -827,7 +858,7 @@ In more practical terms services should be used for quick, short tasks, while ac
 
 The other big difference between actions and services, is that actions can send periodic updates about their progress.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 action -h
    
@@ -839,7 +870,7 @@ The other big difference between actions and services, is that actions can send 
      send_goal  Send an action goal
      show       Output the action definition
 
-** Looks familiar! Let's dif into list, and info. **
+`Looks familiar! Let's dif into list, and info.`
 
 
 ----
@@ -850,7 +881,7 @@ Actions: list & info
 
 Let's see what actions are availabe to us using ``ros2 action list``	
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 action list
    /curly/rotate_absolute
@@ -862,7 +893,7 @@ We see each of our turtles have one service called ``rotate_absolute``.
 Let's dig into this action using the info verb. 
 This command has a ``-t`` flag to list the types of messages.
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 action info /moe/rotate_absolute -t
    Action: /moe/rotate_absolute
@@ -884,7 +915,7 @@ Calling an action and giving it a goal
 
 Let's take a look at the ``ros2 action send_goal`` help command.
 
-::
+.. code-block:: bash
    
    kscottz@ade:~$ ros2 action send_goal -h
    usage: ros2 action send_goal [-h] [-f] action_name action_type goal
@@ -911,7 +942,7 @@ Let's understand the RotateAbsolute action message
 The ``ros2 action show`` command can be used to find the type of action message. 
 Let's take a look. 
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 action show turtlesim/action/RotateAbsolute
    # The desired heading in radians
@@ -939,10 +970,10 @@ Executing the action
 With this information we can create our call to the action server. 
 We'll use the ``-f`` flag to make this a bit clearer.
 
-**Keep an eye on your turtle! It should move, slowly.**
+`Keep an eye on your turtle! It should move, slowly.`
 
 
-.. code-block:: shell
+.. code-block:: bash
 		
    kscottz@ade:~$ ros2 action send_goal -f /turtle1/rotate_absolute turtlesim/action/RotateAbsolute {'theta: 1.70'}
    Waiting for an action server to become available...
@@ -982,7 +1013,7 @@ ROS Bag!
 
 Let's take a look at the base ``bag`` verb.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 bag -h
    usage: ros2 bag [-h] Call `ros2 bag <command> -h` for more detailed usage. ...
@@ -1007,7 +1038,7 @@ The command for that is: ``ros2 run turtlesim draw_square``
 
 Now let's look at ``ros2 bag -h``
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 bag record -h
    usage: ros2 bag record [-h] [-a] [-o OUTPUT] [-s STORAGE]
@@ -1039,7 +1070,7 @@ Let's Bag!
   
 Here's my example. 
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 bag record /turtle1/pose -o turtle1
    [INFO] [rosbag2_storage]: Opened database 'turtle1'.
@@ -1057,7 +1088,7 @@ Let's inspect our Bag.
 You can introspect any bag file using the ``ros2 bag info`` command. 
 This command will list the messages in the bag, the duration of file, and the number of messages. 
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 bag info turtle1
    Files:             turtle1.db3
@@ -1083,7 +1114,7 @@ To replay the bag, first use ``F2/F3`` and ``CTRL+C`` to turn off the main turtl
 
 Now in a new terminal replay the bag file using the following command:
 
-::
+.. code-block:: bash
 
    kscottz@ade:~$ ros2 bag play turtle1
    [INFO] [rosbag2_storage]: Opened database 'turtle1'.
@@ -1092,7 +1123,7 @@ Nothing should happen visibly, but a lot is happening under the hood.
 Use ``F2`` or ``F3`` to go to a second terminal. 
 Just like a running robot, you should be able ``list`` and ``echo`` topics.
 
-::
+.. code-block:: bash
 
    kscottz@ade:~ros2 topic list 
    /parameter_events
@@ -1111,8 +1142,27 @@ Pretty cool right?
 
 You can kill the bag file with ``CTRL+C``.
 
+---
+
+====
+That's All Folks!
+====
+
+* This is by no means complete but it covers the basics.
+* You should use your skills to explore more.
+* Remember your resources!
+
+    * `http://answers.ros.org <https://answers.ros.org/questions/>`_
+    * `https://discourse.ros.org/ <https://discourse.ros.org/>`_
+    * `http://wiki.ros.org/ <http://wiki.ros.org/>`_
+    * `https://index.ros.org/doc/ros2/ <https://index.ros.org/doc/ros2/>`_
 ----
 
 ====
+Homework?! 
 ====
 
+* The TurtleBot comes from a long line of turtle tutorials.
+* The original one was the `Logo programming language <https://en.wikipedia.org/wiki/Logo_(programming_language)>`_ for computer graphics.
+* I would recommend using the turtle to make some cool graphics.
+* `Here's an example of what people did with LOGO. <https://www.youtube.com/watch?v=m4a0jcrDgK0>`_. 
